@@ -39,7 +39,7 @@ h2{font-size:19px;font-weight:600;margin:0 0 4px}
 .chips button{font:inherit;font-size:16px;font-variant-numeric:tabular-nums;min-width:52px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
 .chips.small button{min-width:46px;font-size:15px;padding:8px 6px}
 .chips button[aria-pressed="true"]{background:var(--blue-soft);border-color:var(--blue);color:var(--blue);font-weight:600}
-input[type=number]{font:inherit;font-size:20px;font-variant-numeric:tabular-nums;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input[type=text]{font:inherit;font-size:20px;font-variant-numeric:tabular-nums;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 input:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .result{background:var(--glass);border:1px solid var(--blue);border-radius:14px;padding:16px;margin-bottom:14px}
 .big{font-size:44px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1;color:var(--blue)}
@@ -88,7 +88,7 @@ tr.cur td{color:var(--blue);font-weight:600}
 <p class="intro">Misura col laser l'oggetto più vicino che vuoi nitido.</p>
 <div class="card">
   <label class="lab" for="u">Distanza dall'obiettivo (m)</label>
-  <input id="u" type="number" inputmode="decimal" step="0.1" min="0" placeholder="es. 3,9">
+  <input id="u" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 3,9">
 </div>
 <div class="result" id="invBox" hidden>
   <span class="lab">Diaframma minimo</span>
@@ -103,7 +103,7 @@ tr.cur td{color:var(--blue);font-weight:600}
 <p class="intro">Metti a fuoco sul più vicino e sul più lontano, leggi la scala del posteriore e scrivi la differenza.</p>
 <div class="card">
   <label class="lab" for="d">Differenza sulla scala (mm)</label>
-  <input id="d" type="number" inputmode="decimal" step="0.1" min="0" placeholder="es. 4,5">
+  <input id="d" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 4,5">
 </div>
 <div class="result" id="sinBox" hidden>
   <span class="lab">Diaframma</span>
@@ -127,6 +127,7 @@ function save(){try{localStorage.setItem("campoP2",JSON.stringify(st));}catch(e)
 const fmt=(x,d=1)=>x.toLocaleString("it-IT",{minimumFractionDigits:d,maximumFractionDigits:d});
 const fN=n=>"f/"+String(n).replace(".",",");
 const $=id=>document.getElementById(id);
+const num=v=>{const x=parseFloat(String(v).trim().replace(",","."));return isFinite(x)?x:NaN;};
 function chips(el,items,cur,lab,set){
   el.innerHTML="";
   items.forEach(it=>{const v=it.v??it;const b=document.createElement("button");b.type="button";
@@ -150,8 +151,8 @@ function render(){
   $("tabTitle").textContent="Iperfocale per diaframma, "+st.f+" mm";
   $("tab").innerHTML=WHOLE.map(n=>{const x=H(st.f,n,st.c);return `<tr class="${n===st.n?"cur":""}"><td>${fN(n)}</td><td>${dist(x)}</td><td>${dist(x/2)}</td></tr>`;}).join("");
   // inverso
-  $("u").value=st.u;
-  const u=parseFloat(String(st.u).replace(",","."));
+  if(document.activeElement!==$("u"))$("u").value=st.u;
+  const u=num(st.u);
   if(u>0){
     $("invBox").hidden=false;
     const nmin=st.f*st.f/(2*u*1000*st.c);
@@ -177,8 +178,8 @@ function render(){
     }
   }else{$("invBox").hidden=true;}
   // Sinar
-  $("d").value=st.d;
-  const d=parseFloat(String(st.d).replace(",","."));
+  if(document.activeElement!==$("d"))$("d").value=st.d;
+  const d=num(st.d);
   if(d>0){
     $("sinBox").hidden=false;
     const ns=d/(2*st.c);const r=up(ns);
