@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Campo P2">
+<title>Campo P2</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#16191C">
+<style>
+:root{
+  --bg:#16191C; --glass:#1F2327; --ink:#E9EAE6; --muted:#9AA1A7; --line:#343A40;
+  --blue:#9DB4E6; --blue-soft:#24304A; --warn:#F09A7A; --ok:#86C79E;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root[data-theme="light"]{
+  --bg:#ECEDE8; --glass:#F7F7F3; --ink:#1F2326; --muted:#5E656B; --line:#C9CCC4;
+  --blue:#233A6B; --blue-soft:#DCE3F0; --warn:#9A3B1E; --ok:#2F6B45;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:"Avenir Next","Avenir","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding:18px 18px 40px}
+header{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 16px}
+h1{font-size:26px;font-weight:600;letter-spacing:-0.01em;margin:0}
+h2{font-size:19px;font-weight:600;margin:0 0 4px}
+.intro{color:var(--muted);font-size:15px;margin:0 0 14px}
+#theme{font:inherit;font-size:14px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:10px;padding:6px 10px}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.row{margin-bottom:14px}
+.row:last-child{margin-bottom:0}
+.lab{font-size:14px;color:var(--muted);margin-bottom:6px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:inherit;font-size:16px;font-variant-numeric:tabular-nums;min-width:52px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.chips.small button{min-width:46px;font-size:15px;padding:8px 6px}
+.chips button[aria-pressed="true"]{background:var(--blue-soft);border-color:var(--blue);color:var(--blue);font-weight:600}
+input[type=number]{font:inherit;font-size:20px;font-variant-numeric:tabular-nums;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.result{background:var(--glass);border:1px solid var(--blue);border-radius:14px;padding:16px;margin-bottom:14px}
+.big{font-size:44px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1;color:var(--blue)}
+.big small{font-size:18px;font-weight:500;color:var(--muted);margin-left:4px}
+.sub{color:var(--ink);font-size:16px;margin-top:6px}
+dl{margin:12px 0 0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px}
+dt{color:var(--muted);font-size:15px}
+dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.note{font-size:14px;color:var(--muted);margin-top:10px}
+.warn{color:var(--warn)} .ok{color:var(--ok)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+th,td{padding:6px 4px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:500}
+tr.cur td{color:var(--blue);font-weight:600}
+.rule{border-left:3px solid var(--warn);padding:8px 12px;color:var(--warn);font-size:15px;margin:4px 0 14px}
+.sec{margin-top:26px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Campo P2</h1><button id="theme" type="button">Chiaro</button></header>
+
+<div class="card">
+  <div class="row"><span class="lab">Focale (mm)</span><div class="chips" id="fChips"></div></div>
+  <div class="row"><span class="lab">Diaframma</span><div class="chips small" id="nChips"></div></div>
+  <div class="row"><span class="lab">Criterio di nitidezza</span><div class="chips" id="cChips"></div></div>
+</div>
+
+<h2>Iperfocale</h2>
+<div class="result">
+  <div class="big" id="H">0<small>m</small></div>
+  <div class="sub" id="Hsub"></div>
+  <div class="note" id="Htrick"></div>
+  <div class="note" id="diff"></div>
+</div>
+<div class="rule">Nel dubbio sbaglia verso il lontano, mai verso il vicino.</div>
+
+<div class="card">
+  <span class="lab" id="tabTitle">Iperfocale per diaframma</span>
+  <table><thead><tr><th>Diaframma</th><th>H</th><th>Nitido da</th></tr></thead><tbody id="tab"></tbody></table>
+</div>
+
+<div class="sec">
+<h2>Dall'oggetto più vicino</h2>
+<p class="intro">Misura col laser l'oggetto più vicino che vuoi nitido.</p>
+<div class="card">
+  <label class="lab" for="u">Distanza dall'obiettivo (m)</label>
+  <input id="u" type="number" inputmode="decimal" step="0.1" min="0" placeholder="es. 3,9">
+</div>
+<div class="result" id="invBox" hidden>
+  <span class="lab">Diaframma minimo</span>
+  <div class="big" id="invN"></div>
+  <dl id="invDl"></dl>
+  <div class="note" id="invNote"></div>
+</div>
+</div>
+
+<div class="sec">
+<h2>Metodo Sinar</h2>
+<p class="intro">Metti a fuoco sul più vicino e sul più lontano, leggi la scala del posteriore e scrivi la differenza.</p>
+<div class="card">
+  <label class="lab" for="d">Differenza sulla scala (mm)</label>
+  <input id="d" type="number" inputmode="decimal" step="0.1" min="0" placeholder="es. 4,5">
+</div>
+<div class="result" id="sinBox" hidden>
+  <span class="lab">Diaframma</span>
+  <div class="big" id="sinN"></div>
+  <div class="sub">Fuoco a metà tra le due letture.</div>
+  <div class="note" id="sinNote"></div>
+</div>
+</div>
+
+<p class="note">Formule: H = f² / (N·c), nitido da H/2 all'infinito. Diaframma minimo per un oggetto a u: N = f² / (2·u·c). Metodo Sinar: N = Δ / (2·c).</p>
+</div>
+
+<script>
+const F=[75,90,120,150,210,250,300];
+const N=[5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22,25,29,32,36,40,45,51,57,64];
+const WHOLE=[5.6,8,11,16,22,32,45,64];
+const C=[{v:0.1,t:"Normale 0,1"},{v:0.05,t:"Severo 0,05"}];
+let st={f:150,n:22,c:0.1,u:"",d:"",theme:"dark"};
+try{const s=JSON.parse(localStorage.getItem("campoP2")||"null");if(s)st=Object.assign(st,s);}catch(e){}
+function save(){try{localStorage.setItem("campoP2",JSON.stringify(st));}catch(e){}}
+const fmt=(x,d=1)=>x.toLocaleString("it-IT",{minimumFractionDigits:d,maximumFractionDigits:d});
+const fN=n=>"f/"+String(n).replace(".",",");
+const $=id=>document.getElementById(id);
+function chips(el,items,cur,lab,set){
+  el.innerHTML="";
+  items.forEach(it=>{const v=it.v??it;const b=document.createElement("button");b.type="button";
+    b.textContent=it.t??lab(v);b.setAttribute("aria-pressed",v===cur);
+    b.onclick=()=>{set(v);save();render();};el.appendChild(b);});
+}
+const H=(f,n,c)=>f*f/(n*c)/1000; // metri
+const up=x=>N.find(n=>n>=x-1e-9);
+function dist(m){return m>=100?fmt(m,0)+" m":fmt(m,m<10?2:1)+" m";}
+function render(){
+  document.documentElement.dataset.theme=st.theme;
+  $("theme").textContent=st.theme==="dark"?"Chiaro":"Scuro";
+  chips($("fChips"),F,st.f,v=>v,v=>st.f=v);
+  chips($("nChips"),N,st.n,v=>String(v).replace(".",","),v=>st.n=v);
+  chips($("cChips"),C,st.c,null,v=>st.c=v);
+  const h=H(st.f,st.n,st.c);
+  $("H").innerHTML=fmt(h,h<10?2:1)+"<small>m</small>";
+  $("Hsub").textContent="Fuoco a "+dist(h)+": nitido da "+dist(h/2)+" all'infinito.";
+  $("Htrick").textContent="Trucco: metti un oggetto (lo sgabello) a "+dist(h)+" col laser e mettici il fuoco.";
+  $("diff").innerHTML=st.n>=64?'<span class="warn">A f/64 la diffrazione si vede: usalo solo se serve davvero la profondità.</span>':st.n>=45?'<span class="warn">Da f/45 si perde un po\' di nitidezza negli ingrandimenti grandi.</span>':"";
+  $("tabTitle").textContent="Iperfocale per diaframma, "+st.f+" mm";
+  $("tab").innerHTML=WHOLE.map(n=>{const x=H(st.f,n,st.c);return `<tr class="${n===st.n?"cur":""}"><td>${fN(n)}</td><td>${dist(x)}</td><td>${dist(x/2)}</td></tr>`;}).join("");
+  // inverso
+  $("u").value=st.u;
+  const u=parseFloat(String(st.u).replace(",","."));
+  if(u>0){
+    $("invBox").hidden=false;
+    const nmin=st.f*st.f/(2*u*1000*st.c);
+    const nr=up(nmin);
+    if(!nr){
+      $("invN").textContent="oltre f/64";
+      $("invDl").innerHTML="";
+      $("invNote").innerHTML='<span class="warn">Nemmeno f/64 basta: allontanati, usa una focale più corta o il basculaggio.</span>';
+    }else{
+      const nn=Math.max(nr,5.6);
+      const hr=H(st.f,nn,st.c);
+      const lo=hr, hi=u>=hr?Infinity:hr*u/(hr-u);
+      const rec=hi===Infinity?hr*1.2:(lo+hi)/2;
+      $("invN").textContent=fN(nn);
+      $("invDl").innerHTML=`<dt>Calcolo esatto</dt><dd>${fN(fmt(nmin,1))}</dd>
+        <dt>Fuoco sicuro da</dt><dd>${dist(lo)}</dd>
+        <dt>a</dt><dd>${hi===Infinity?"infinito":dist(hi)}</dd>
+        <dt>Consigliato</dt><dd>${dist(rec)}</dd>`;
+      const nw=WHOLE.find(n=>n>nn);
+      if(nw){const h2=H(st.f,nw,st.c);const hi2=u>=h2?Infinity:h2*u/(h2-u);
+        $("invDl").innerHTML+=`<dt>Con più margine</dt><dd>${fN(nw)}: da ${dist(h2)} a ${hi2===Infinity?"infinito":dist(hi2)}</dd>`;}
+      $("invNote").innerHTML=(nn>=45?'<span class="warn">Diaframma molto chiuso: valuta il basculaggio. </span>':'')+"Tutto ciò che sta oltre "+dist(u)+" resta nitido fino all'infinito.";
+    }
+  }else{$("invBox").hidden=true;}
+  // Sinar
+  $("d").value=st.d;
+  const d=parseFloat(String(st.d).replace(",","."));
+  if(d>0){
+    $("sinBox").hidden=false;
+    const ns=d/(2*st.c);const r=up(ns);
+    $("sinN").textContent=r?fN(r):"oltre f/64";
+    $("sinNote").innerHTML="Calcolo esatto "+fN(fmt(ns,1))+(r?", arrotondato verso il chiuso.":'. <span class="warn">Differenza troppo grande: serve il basculaggio.</span>');
+  }else{$("sinBox").hidden=true;}
+}
+$("u").addEventListener("input",e=>{st.u=e.target.value;save();render();});
+$("d").addEventListener("input",e=>{st.d=e.target.value;save();render();});
+$("theme").onclick=()=>{st.theme=st.theme==="dark"?"light":"dark";save();render();};
+render();
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
+</script>
+</body>
+</html>
