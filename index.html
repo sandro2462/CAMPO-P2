@@ -76,6 +76,12 @@ tr.cur td{color:var(--blue);font-weight:600}
   <div class="note" id="Htrick"></div>
   <div class="note" id="diff"></div>
 </div>
+<div class="card">
+  <label class="lab" for="s">Dove metti lo sgabello (m)</label>
+  <input id="s" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 8">
+  <dl id="sDl" hidden></dl>
+  <div class="note" id="sNote"></div>
+</div>
 <div class="rule">Nel dubbio sbaglia verso il lontano, mai verso il vicino.</div>
 
 <div class="card">
@@ -121,7 +127,7 @@ const F=[75,90,120,150,210,250,300];
 const N=[5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22,25,29,32,36,40,45,51,57,64];
 const WHOLE=[5.6,8,11,16,22,32,45,64];
 const C=[{v:0.1,t:"Normale 0,1"},{v:0.05,t:"Severo 0,05"}];
-let st={f:150,n:22,c:0.1,u:"",d:"",theme:"dark"};
+let st={f:150,n:22,c:0.1,u:"",d:"",s:"",theme:"dark"};
 try{const s=JSON.parse(localStorage.getItem("campoP2")||"null");if(s)st=Object.assign(st,s);}catch(e){}
 function save(){try{localStorage.setItem("campoP2",JSON.stringify(st));}catch(e){}}
 const fmt=(x,d=1)=>x.toLocaleString("it-IT",{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -146,8 +152,17 @@ function render(){
   const h=H(st.f,st.n,st.c);
   $("H").innerHTML=fmt(h,h<10?2:1)+"<small>m</small>";
   $("Hsub").textContent="Fuoco a "+dist(h)+": nitido da "+dist(h/2)+" all'infinito.";
-  $("Htrick").textContent="Trucco: metti un oggetto (lo sgabello) a "+dist(h)+" col laser e mettici il fuoco.";
+  const sg=Math.ceil(h*1.1*2)/2; const nearSg=h*sg/(h+sg);
+  $("Htrick").innerHTML="<b>Sgabello a "+dist(sg)+"</b> col laser, fuoco sullo sgabello: nitido da "+dist(nearSg)+" all'infinito, con margine verso il lontano.";
   $("diff").innerHTML=st.n>=64?'<span class="warn">A f/64 la diffrazione si vede: usalo solo se serve davvero la profondità.</span>':st.n>=45?'<span class="warn">Da f/45 si perde un po\' di nitidezza negli ingrandimenti grandi.</span>':"";
+  if(document.activeElement!==$("s"))$("s").value=st.s;
+  const sv=num(st.s);
+  if(sv>0){
+    const near=h*sv/(h+sv), far=sv>=h?Infinity:h*sv/(h-sv);
+    $("sDl").hidden=false;
+    $("sDl").innerHTML=`<dt>Nitido da</dt><dd>${dist(near)}</dd><dt>a</dt><dd>${far===Infinity?"infinito":dist(far)}</dd>`;
+    $("sNote").innerHTML=far===Infinity?(sv<h*1.05?'<span class="warn">Sei quasi sull\'iperfocale: un piccolo errore verso il vicino perde l\'infinito.</span>':'<span class="ok">Infinito compreso, con margine.</span>'):'<span class="warn">Lo sgabello è più vicino dell\'iperfocale ('+dist(h)+'): l\'infinito non è nitido.</span>';
+  }else{$("sDl").hidden=true;$("sNote").textContent="";}
   $("tabTitle").textContent="Iperfocale per diaframma, "+st.f+" mm";
   $("tab").innerHTML=WHOLE.map(n=>{const x=H(st.f,n,st.c);return `<tr class="${n===st.n?"cur":""}"><td>${fN(n)}</td><td>${dist(x)}</td><td>${dist(x/2)}</td></tr>`;}).join("");
   // inverso
@@ -170,10 +185,11 @@ function render(){
       $("invDl").innerHTML=`<dt>Calcolo esatto</dt><dd>${fN(fmt(nmin,1))}</dd>
         <dt>Fuoco sicuro da</dt><dd>${dist(lo)}</dd>
         <dt>a</dt><dd>${hi===Infinity?"infinito":dist(hi)}</dd>
-        <dt>Consigliato</dt><dd>${dist(rec)}</dd>`;
+        <dt>Sgabello a</dt><dd>${dist(rec)}</dd>`;
       const nw=WHOLE.find(n=>n>nn);
       if(nw){const h2=H(st.f,nw,st.c);const hi2=u>=h2?Infinity:h2*u/(h2-u);
-        $("invDl").innerHTML+=`<dt>Con più margine</dt><dd>${fN(nw)}: da ${dist(h2)} a ${hi2===Infinity?"infinito":dist(hi2)}</dd>`;}
+        const rec2=hi2===Infinity?h2*1.2:(h2+hi2)/2;
+        $("invDl").innerHTML+=`<dt>Con più margine</dt><dd>${fN(nw)}: fuoco da ${dist(h2)} a ${hi2===Infinity?"infinito":dist(hi2)}</dd><dt>Sgabello a</dt><dd>${dist(rec2)}</dd>`;}
       $("invNote").innerHTML=(nn>=45?'<span class="warn">Diaframma molto chiuso: valuta il basculaggio. </span>':'')+"Tutto ciò che sta oltre "+dist(u)+" resta nitido fino all'infinito.";
     }
   }else{$("invBox").hidden=true;}
@@ -187,6 +203,7 @@ function render(){
     $("sinNote").innerHTML="Calcolo esatto "+fN(fmt(ns,1))+(r?", arrotondato verso il chiuso.":'. <span class="warn">Differenza troppo grande: serve il basculaggio.</span>');
   }else{$("sinBox").hidden=true;}
 }
+$("s").addEventListener("input",e=>{st.s=e.target.value;save();render();});
 $("u").addEventListener("input",e=>{st.u=e.target.value;save();render();});
 $("d").addEventListener("input",e=>{st.d=e.target.value;save();render();});
 $("theme").onclick=()=>{st.theme=st.theme==="dark"?"light":"dark";save();render();};
