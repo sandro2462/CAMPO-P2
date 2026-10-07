@@ -57,6 +57,11 @@ th{color:var(--muted);font-weight:500}
 tr.cur td{color:var(--blue);font-weight:600}
 .rule{border-left:3px solid var(--warn);padding:8px 12px;color:var(--warn);font-size:15px;margin:4px 0 14px}
 .sec{margin-top:26px}
+.bar{margin-top:12px}
+.bar svg{width:100%;height:auto;display:block}
+.bar text{font-family:inherit;font-size:11px;fill:var(--muted)}
+.bar .lb{fill:var(--ink);font-weight:600}
+.minor{font-size:14px;color:var(--muted);margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
 </style>
 </head>
 <body>
@@ -97,7 +102,7 @@ tr.cur td{color:var(--blue);font-weight:600}
   <input id="u" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 3,9">
 </div>
 <div class="result" id="invBox" hidden>
-  <span class="lab">Diaframma minimo</span>
+  <span class="lab">Diaframma consigliato</span>
   <div class="big" id="invN"></div>
   <dl id="invDl"></dl>
   <div class="note" id="invNote"></div>
@@ -143,6 +148,22 @@ function chips(el,items,cur,lab,set){
 const H=(f,n,c)=>f*f/(n*c)/1000; // metri
 const up=x=>N.find(n=>n>=x-1e-9);
 function dist(m){return m>=100?fmt(m,0)+" m":fmt(m,m<10?2:1)+" m";}
+function bar(u,A){
+  const W=320,X0=14,X1=300;
+  const maxD=Math.max((A.hi===Infinity?A.sg*1.5:A.hi*1.25),(u||0)*1.4,A.near*2);
+  const x=d=>X0+(Math.min(d,maxD)/maxD)*(X1-X0);
+  const hiX=A.hi===Infinity?X1:x(A.hi);
+  let g=`<svg viewBox="0 0 ${W} 74" role="img" aria-label="Zona nitida">`;
+  g+=`<line x1="${X0}" y1="34" x2="${X1}" y2="34" stroke="var(--line)" stroke-width="2"/>`;
+  g+=`<rect x="${x(A.near)}" y="27" width="${X1-x(A.near)}" height="14" rx="3" fill="var(--blue-soft)" stroke="var(--blue)"/>`;
+  g+=`<text x="${X1+4}" y="38" class="lb">∞</text>`;
+  g+=`<rect x="${x(A.lo)}" y="46" width="${hiX-x(A.lo)}" height="6" rx="3" fill="var(--ok)" opacity=".55"/>`;
+  g+=`<circle cx="${X0}" cy="34" r="5" fill="var(--ink)"/><text x="${X0-6}" y="18">obiettivo</text>`;
+  g+=`<text x="${x(A.near)}" y="20" text-anchor="middle" class="lb">${fmt(A.near,1)}</text>`;
+  g+=`<path d="M${x(A.sg)} 44 l-5 10 h10 z" fill="var(--warn)"/><text x="${x(A.sg)}" y="68" text-anchor="middle" class="lb">sgabello ${fmt(A.sg,1)}</text>`;
+  if(u){g+=`<line x1="${x(u)}" y1="24" x2="${x(u)}" y2="44" stroke="var(--ink)" stroke-width="2"/><text x="${x(u)}" y="${x(u)-x(A.near)<30?10:20}" text-anchor="middle">oggetto ${fmt(u,1)}</text>`;}
+  return `<div class="bar">${g}</svg><div class="note">Azzurro: zona nitida. Verde: dove puoi mettere lo sgabello.</div></div>`;
+}
 function render(){
   document.documentElement.dataset.theme=st.theme;
   $("theme").textContent=st.theme==="dark"?"Chiaro":"Scuro";
@@ -161,7 +182,8 @@ function render(){
     const near=h*sv/(h+sv), far=sv>=h?Infinity:h*sv/(h-sv);
     $("sDl").hidden=false;
     $("sDl").innerHTML=`<dt>Nitido da</dt><dd>${dist(near)}</dd><dt>a</dt><dd>${far===Infinity?"infinito":dist(far)}</dd>`;
-    $("sNote").innerHTML=far===Infinity?(sv<h*1.05?'<span class="warn">Sei quasi sull\'iperfocale: un piccolo errore verso il vicino perde l\'infinito.</span>':'<span class="ok">Infinito compreso, con margine.</span>'):'<span class="warn">Lo sgabello è più vicino dell\'iperfocale ('+dist(h)+'): l\'infinito non è nitido.</span>';
+    const tol={lo:h,hi:Infinity,sg:sv,near:near};
+    $("sNote").innerHTML=(far===Infinity?bar(0,tol):"")+(far===Infinity?(sv<h*1.05?'<span class="warn">Sei quasi sull\'iperfocale: un piccolo errore verso il vicino perde l\'infinito.</span>':'<span class="ok">Infinito compreso, con margine.</span>'):'<span class="warn">Lo sgabello è più vicino dell\'iperfocale ('+dist(h)+'): l\'infinito non è nitido.</span>');
   }else{$("sDl").hidden=true;$("sNote").textContent="";}
   $("tabTitle").textContent="Iperfocale per diaframma, "+st.f+" mm";
   $("tab").innerHTML=WHOLE.map(n=>{const x=H(st.f,n,st.c);return `<tr class="${n===st.n?"cur":""}"><td>${fN(n)}</td><td>${dist(x)}</td><td>${dist(x/2)}</td></tr>`;}).join("");
@@ -178,19 +200,16 @@ function render(){
       $("invNote").innerHTML='<span class="warn">Nemmeno f/64 basta: allontanati, usa una focale più corta o il basculaggio.</span>';
     }else{
       const nn=Math.max(nr,5.6);
-      const hr=H(st.f,nn,st.c);
-      const lo=hr, hi=u>=hr?Infinity:hr*u/(hr-u);
-      const rec=hi===Infinity?hr*1.2:(lo+hi)/2;
-      $("invN").textContent=fN(nn);
-      $("invDl").innerHTML=`<dt>Calcolo esatto</dt><dd>${fN(fmt(nmin,1))}</dd>
-        <dt>Fuoco sicuro da</dt><dd>${dist(lo)}</dd>
-        <dt>a</dt><dd>${hi===Infinity?"infinito":dist(hi)}</dd>
-        <dt>Sgabello a</dt><dd>${dist(rec)}</dd>`;
-      const nw=WHOLE.find(n=>n>nn);
-      if(nw){const h2=H(st.f,nw,st.c);const hi2=u>=h2?Infinity:h2*u/(h2-u);
-        const rec2=hi2===Infinity?h2*1.2:(h2+hi2)/2;
-        $("invDl").innerHTML+=`<dt>Con più margine</dt><dd>${fN(nw)}: fuoco da ${dist(h2)} a ${hi2===Infinity?"infinito":dist(hi2)}</dd><dt>Sgabello a</dt><dd>${dist(rec2)}</dd>`;}
-      $("invNote").innerHTML=(nn>=45?'<span class="warn">Diaframma molto chiuso: valuta il basculaggio. </span>':'')+"Tutto ciò che sta oltre "+dist(u)+" resta nitido fino all'infinito.";
+      const nw=WHOLE.find(n=>n>nn)||nn;
+      const opt=n=>{const hh=H(st.f,n,st.c);const lo=hh,hi=u>=hh?Infinity:hh*u/(hh-u);
+        const sg=hi===Infinity?Math.ceil(hh*1.1*2)/2:Math.round((lo+hi)/2*10)/10;
+        return {n,hh,lo,hi,sg,near:hh*sg/(hh+sg)};};
+      const A=opt(nw), B=opt(nn);
+      $("invN").textContent=fN(A.n);
+      $("invDl").innerHTML=`<dt>Sgabello a</dt><dd>${dist(A.sg)}</dd>
+        <dt>Va bene se lo metti tra</dt><dd>${dist(A.lo)} e ${A.hi===Infinity?"oltre":dist(A.hi)}</dd>
+        <dt>Nitido dall'obiettivo</dt><dd>da ${dist(A.near)} all'infinito</dd>`;
+      $("invNote").innerHTML=bar(u,A)+(A.n!==B.n?`<div class="minor">Minimo indispensabile ${fN(B.n)} (calcolo esatto ${fN(fmt(nmin,1))}): sgabello tra ${dist(B.lo)} e ${dist(B.hi)}, quasi senza margine.</div>`:"")+(A.n>=45?'<div class="note warn">Diaframma molto chiuso: valuta il basculaggio.</div>':'');
     }
   }else{$("invBox").hidden=true;}
   // Sinar
