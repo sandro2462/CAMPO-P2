@@ -57,6 +57,7 @@ th{color:var(--muted);font-weight:500}
 tr.cur td{color:var(--blue);font-weight:600}
 .rule{border-left:3px solid var(--warn);padding:8px 12px;color:var(--warn);font-size:15px;margin:4px 0 14px}
 .sec{margin-top:26px}
+.pair2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .bar{margin-top:12px}
 .bar svg{width:100%;height:auto;display:block}
 .bar text{font-family:inherit;font-size:11px;fill:var(--muted)}
@@ -106,21 +107,30 @@ tr.cur td{color:var(--blue);font-weight:600}
   <div class="big" id="invN"></div>
   <dl id="invDl"></dl>
   <div class="note" id="invNote"></div>
+  <div class="minor">
+    <label class="lab" for="s2">Dove hai messo lo sgabello (m)</label>
+    <input id="s2" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 8">
+    <div id="s2Out"></div>
+  </div>
 </div>
 </div>
 
 <div class="sec">
 <h2>Metodo Sinar</h2>
-<p class="intro">Metti a fuoco sul più vicino e sul più lontano, leggi la scala del posteriore e scrivi la differenza.</p>
+<p class="intro">Metti a fuoco sul più vicino e sul più lontano e leggi la scala del posteriore contro il puntino bianco, in centimetri come sono scritti.</p>
 <div class="card">
-  <label class="lab" for="d">Differenza sulla scala (mm)</label>
-  <input id="d" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 4,5">
+  <div class="pair2">
+    <div><label class="lab" for="r1">Lettura vicino (cm)</label><input id="r1" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 1,74"></div>
+    <div><label class="lab" for="r2">Lettura lontano (cm)</label><input id="r2" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 2,17"></div>
+  </div>
 </div>
 <div class="result" id="sinBox" hidden>
-  <span class="lab">Diaframma</span>
+  <dl id="sinDl" style="margin-top:0"></dl>
+  <span class="lab" style="margin-top:12px">Diaframma</span>
   <div class="big" id="sinN"></div>
-  <div class="sub">Fuoco a metà tra le due letture.</div>
+  <div class="sub" id="sinMid"></div>
   <div class="note" id="sinNote"></div>
+  <div id="sinCheck"></div>
 </div>
 </div>
 
@@ -132,7 +142,7 @@ const F=[75,90,120,150,210,250,300];
 const N=[5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22,25,29,32,36,40,45,51,57,64];
 const WHOLE=[5.6,8,11,16,22,32,45,64];
 const C=[{v:0.1,t:"Normale 0,1"},{v:0.05,t:"Severo 0,05"}];
-let st={f:150,n:22,c:0.1,u:"",d:"",s:"",theme:"dark"};
+let st={f:150,n:22,c:0.1,u:"",r1:"",r2:"",s:"",s2:"",theme:"dark"};
 try{const s=JSON.parse(localStorage.getItem("campoP2")||"null");if(s)st=Object.assign(st,s);}catch(e){}
 function save(){try{localStorage.setItem("campoP2",JSON.stringify(st));}catch(e){}}
 const fmt=(x,d=1)=>x.toLocaleString("it-IT",{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -173,8 +183,7 @@ function render(){
   const h=H(st.f,st.n,st.c);
   $("H").innerHTML=fmt(h,h<10?2:1)+"<small>m</small>";
   $("Hsub").textContent="Fuoco a "+dist(h)+": nitido da "+dist(h/2)+" all'infinito.";
-  const sg=Math.ceil(h*1.1*2)/2; const nearSg=h*sg/(h+sg);
-  $("Htrick").innerHTML="<b>Sgabello a "+dist(sg)+"</b> col laser, fuoco sullo sgabello: nitido da "+dist(nearSg)+" all'infinito, con margine verso il lontano.";
+  $("Htrick").textContent="";
   $("diff").innerHTML=st.n>=64?'<span class="warn">A f/64 la diffrazione si vede: usalo solo se serve davvero la profondità.</span>':st.n>=45?'<span class="warn">Da f/45 si perde un po\' di nitidezza negli ingrandimenti grandi.</span>':"";
   if(document.activeElement!==$("s"))$("s").value=st.s;
   const sv=num(st.s);
@@ -209,22 +218,61 @@ function render(){
       $("invDl").innerHTML=`<dt>Sgabello a</dt><dd>${dist(A.sg)}</dd>
         <dt>Va bene se lo metti tra</dt><dd>${dist(A.lo)} e ${A.hi===Infinity?"oltre":dist(A.hi)}</dd>
         <dt>Nitido dall'obiettivo</dt><dd>da ${dist(A.near)} all'infinito</dd>`;
+      if(document.activeElement!==$("s2"))$("s2").value=st.s2;
+      const s2=num(st.s2);
+      if(s2>0){
+        const hh=A.hh, nr2=hh*s2/(hh+s2);
+        const inf=s2<hh?'<span class="warn">Infinito NON nitido: lo sgabello è più vicino di '+dist(hh)+'.</span>':s2<hh*1.05?'<span class="warn">Infinito al limite: basta un piccolo errore verso il vicino per perderlo.</span>':'<span class="ok">Infinito compreso, con margine.</span>';
+        const obj=nr2>u?'<span class="warn">Oggetto a '+dist(u)+' NON nitido: la nitidezza parte da '+dist(nr2)+'.</span>':nr2>u*0.95?'<span class="warn">Oggetto a '+dist(u)+' al limite: la nitidezza parte da '+dist(nr2)+'.</span>':'<span class="ok">Oggetto a '+dist(u)+' nitido, con margine: la nitidezza parte da '+dist(nr2)+'.</span>';
+        const okInf=s2>=hh*1.05, okObj=nr2<=u*0.95;
+        let fix="";
+        if(!okInf||!okObj){
+          const win=n=>{const H2=H(st.f,n,st.c);const lo=H2*1.05;const uu=u*0.95;const hi=uu>=H2?Infinity:H2*uu/(H2-uu);return {n,lo,hi,ok:lo<=hi};};
+          let w=win(A.n);
+          if(!w.ok){w=null;for(const n of N){if(n<=A.n)continue;const t=win(n);if(t.ok){w=t;break;}}}
+          const rng=w?("tra "+dist(Math.ceil(w.lo*10)/10)+" e "+(w.hi===Infinity?"oltre":dist(Math.floor(w.hi*10)/10))):"";
+          fix=!w?'Nemmeno a f/64 ci stanno insieme: allontanati dall\'oggetto, usa una focale più corta o il basculaggio.':(w.n===A.n?'Sposta lo sgabello '+rng+'.':'Chiudi a <b>'+fN(w.n)+'</b> e metti lo sgabello '+rng+'.');
+          fix=`<div class="note"><b>Come rimediare:</b> ${fix}</div>`;
+        }
+        $("s2Out").innerHTML=`<div class="note">A ${fN(A.n)}:</div><div class="note">${inf}</div><div class="note">${obj}</div>${fix}`;
+      }else{$("s2Out").innerHTML="";}
       $("invNote").innerHTML=bar(u,A)+(A.n!==B.n?`<div class="minor">Minimo indispensabile ${fN(B.n)} (calcolo esatto ${fN(fmt(nmin,1))}): sgabello tra ${dist(B.lo)} e ${dist(B.hi)}, quasi senza margine.</div>`:"")+(A.n>=45?'<div class="note warn">Diaframma molto chiuso: valuta il basculaggio.</div>':'');
     }
   }else{$("invBox").hidden=true;}
   // Sinar
-  if(document.activeElement!==$("d"))$("d").value=st.d;
-  const d=num(st.d);
+  for(const k of ["r1","r2"]) if(document.activeElement!==$(k))$(k).value=st[k];
+  const r1=num(st.r1), r2=num(st.r2);
+  const d=(isFinite(r1)&&isFinite(r2))?Math.abs(r2-r1)*10:NaN;
   if(d>0){
+    $("sinDl").innerHTML=`<dt>Differenza</dt><dd>${fmt(d,1)} tacche (${fmt(d,1)} mm)</dd>`;
+    $("sinMid").innerHTML=`Fuoco a metà: porta il puntino su <b>${fmt((r1+r2)/2,2)}</b> sulla scala.`;
     $("sinBox").hidden=false;
     const ns=d/(2*st.c);const r=up(ns);
     $("sinN").textContent=r?fN(r):"oltre f/64";
     $("sinNote").innerHTML="Calcolo esatto "+fN(fmt(ns,1))+(r?", arrotondato verso il chiuso.":'. <span class="warn">Differenza troppo grande: serve il basculaggio.</span>');
+    // traduzione in distanze, se c'è l'oggetto vicino
+    const uu=num(st.u);
+    const nS=up(d/(2*st.c));
+    if(uu>0){
+      const f=st.f, vN=f*uu*1000/(uu*1000-f), dExp=vN-f, vF=vN-d;
+      let txt;
+      if(vF<f-0.3){
+        txt=`<span class="warn">Lettura impossibile: con l'oggetto a ${dist(uu)}, dall'oggetto all'infinito ci sono al massimo ${fmt(dExp,1)} tacche. Rileggi le due posizioni.</span>`;
+      }else{
+        const inf=vF<=f+0.3;
+        const dF=inf?Infinity:f*vF/(vF-f)/1000;
+        txt=`Con ${nS?fN(nS):"f/64"} e il puntino su ${fmt((r1+r2)/2,2)}: <b>nitido da ${dist(uu)} a ${inf?"infinito":dist(dF)}</b>.<br>`+
+          (inf?'<span class="ok">Infinito compreso.</span>':`<span class="warn">Infinito NON compreso: per averlo servono ${fmt(dExp,1)} tacche, cioè ${fN(up(dExp/(2*st.c))||64)}.</span>`);
+      }
+      $("sinCheck").innerHTML=`<div class="minor">${txt}</div>`;
+    }else{$("sinCheck").innerHTML='<div class="note">Scrivi sopra la distanza dell\'oggetto più vicino e qui vedrai da dove a dove è nitido.</div>';}
   }else{$("sinBox").hidden=true;}
 }
 $("s").addEventListener("input",e=>{st.s=e.target.value;save();render();});
+$("s2").addEventListener("input",e=>{st.s2=e.target.value;save();render();});
 $("u").addEventListener("input",e=>{st.u=e.target.value;save();render();});
-$("d").addEventListener("input",e=>{st.d=e.target.value;save();render();});
+$("r1").addEventListener("input",e=>{st.r1=e.target.value;save();render();});
+$("r2").addEventListener("input",e=>{st.r2=e.target.value;save();render();});
 $("theme").onclick=()=>{st.theme=st.theme==="dark"?"light":"dark";save();render();};
 render();
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
