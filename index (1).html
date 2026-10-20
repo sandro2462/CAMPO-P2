@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Campo P2">
+<title>Campo P2</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#16191C">
+<style>
+:root{
+  --bg:#16191C; --glass:#1F2327; --ink:#E9EAE6; --muted:#9AA1A7; --line:#343A40;
+  --blue:#9DB4E6; --blue-soft:#24304A; --warn:#F09A7A; --ok:#86C79E; --mid:#E2B860;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root[data-theme="light"]{
+  --bg:#ECEDE8; --glass:#F7F7F3; --ink:#1F2326; --muted:#5E656B; --line:#C9CCC4;
+  --blue:#233A6B; --blue-soft:#DCE3F0; --warn:#9A3B1E; --ok:#2F6B45; --mid:#A87410;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:"Avenir Next","Avenir","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding:18px 18px 40px}
+header{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 16px}
+h1{font-size:26px;font-weight:600;letter-spacing:-0.01em;margin:0}
+h2{font-size:19px;font-weight:600;margin:0 0 4px}
+.intro{color:var(--muted);font-size:15px;margin:0 0 14px}
+#theme{font:inherit;font-size:14px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:10px;padding:6px 10px}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.row{margin-bottom:14px}
+.row:last-child{margin-bottom:0}
+.lab{font-size:14px;color:var(--muted);margin-bottom:6px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:inherit;font-size:16px;font-variant-numeric:tabular-nums;min-width:52px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.chips.small button{min-width:46px;font-size:15px;padding:8px 6px}
+.chips button[aria-pressed="true"]{background:var(--blue-soft);border-color:var(--blue);color:var(--blue);font-weight:600}
+input[type=text]{font:inherit;font-size:20px;font-variant-numeric:tabular-nums;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.result{background:var(--glass);border:1px solid var(--blue);border-radius:14px;padding:16px;margin-bottom:14px}
+.big{font-size:44px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1;color:var(--blue)}
+.big small{font-size:18px;font-weight:500;color:var(--muted);margin-left:4px}
+.sub{color:var(--ink);font-size:16px;margin-top:6px}
+dl{margin:12px 0 0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px}
+dt{color:var(--muted);font-size:15px}
+dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.note{font-size:14px;color:var(--muted);margin-top:10px}
+.warn{color:var(--warn)} .ok{color:var(--ok)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+th,td{padding:6px 4px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:500}
+tr.cur td{color:var(--blue);font-weight:600}
+.rule{border-left:3px solid var(--warn);padding:8px 12px;color:var(--warn);font-size:15px;margin:4px 0 14px}
+.sec{margin-top:26px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;padding-bottom:2px}
+.tabs button{font:inherit;font-size:15px;white-space:nowrap;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--glass);color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--blue-soft);border-color:var(--blue);color:var(--blue);font-weight:600}
+.tabs button:disabled{opacity:.4}
+.btn{font:inherit;font-size:16px;font-weight:600;width:100%;margin-top:12px;padding:12px;border-radius:12px;border:1px solid var(--blue);background:var(--blue-soft);color:var(--blue)}
+.steps{margin:8px 0 0;padding-left:22px}
+.steps li{margin-bottom:8px}
+.pair2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bar{margin-top:12px}
+.bar svg{width:100%;height:auto;display:block}
+.bar text{font-family:inherit;font-size:11px;fill:var(--muted)}
+.bar .lb{fill:var(--ink);font-weight:600}
+.sgMsg{font-weight:600;margin-top:4px}
+.sgSug{color:var(--ink);font-size:15px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.vd{border-radius:14px;padding:14px 16px;margin-bottom:14px;border:1px solid var(--line);background:var(--glass)}
+.vd .t{font-weight:600;font-size:18px;margin-bottom:6px}
+.vd.g{border-color:var(--ok)} .vd.g .t{color:var(--ok)}
+.vd.y{border-color:#E3C04F} .vd.y .t{color:#E3C04F}
+.vd.o{border-color:var(--warn)} .vd.o .t{color:var(--warn)}
+.vd p{margin:6px 0 0}
+.sol{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.sol:first-of-type{margin-top:10px}.sol .sn{flex:0 0 28px;height:28px;border-radius:50%;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700}.sol .st{font-weight:700;font-size:17px}.sol .sd{color:var(--muted);margin-top:2px}.sol .btn{margin-top:8px}.sol.no{opacity:.45}
+.go{font:inherit;font-weight:600;padding:10px 16px;border-radius:10px;border:1px solid var(--warn);background:transparent;color:var(--warn)}
+.minor{font-size:14px;color:var(--muted);margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.fbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fbtns .btn{margin-top:0}
+.fbtn{font:inherit;font-size:16px;font-weight:600;text-align:center;padding:12px;border-radius:12px;border:1px solid var(--blue);background:var(--blue-soft);color:var(--blue);display:block;cursor:pointer}
+#fWrap,#mWrap{position:relative;margin-top:12px;border-radius:10px;overflow:hidden;background:#000}
+#fCan{width:100%;display:block;touch-action:manipulation}
+#mVid{width:100%;display:block}
+#mCan{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+textarea{font:inherit;font-size:16px;width:100%;min-height:70px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input[type=password]{font:inherit;font-size:16px;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+details summary{color:var(--muted);font-size:14px;cursor:pointer;margin-top:10px}
+.ai h3{font-size:16px;margin:14px 0 4px;color:var(--blue)}
+.ai p{margin:4px 0}
+.ai ul{margin:4px 0;padding-left:20px}
+.leg{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:8px}
+.leg i{display:inline-block;width:18px;height:0;border-top:3px solid var(--blue);vertical-align:middle;margin-right:5px}
+.leg i.d{border-top:2px dashed #E3C04F}
+/* Bosch e Tilt col Bosch */
+.hint{font-size:14px;color:var(--muted);margin-top:8px}
+.bosch{border-left:3px solid var(--blue)}
+.safe{border-top:1px solid var(--line);margin-top:12px;padding-top:8px}
+.safe .lab{margin-bottom:0}
+.safe dl{margin-top:4px}
+.safe dd{color:var(--ink)}
+.h2row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 6px}
+.h2row h2{margin:0}
+.rst,.x{font:inherit;font-size:14px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:10px;padding:6px 10px;cursor:pointer}
+.btn2{font:inherit;font-size:15px;width:100%;margin:0 0 6px;padding:10px;border-radius:12px;border:1px dashed var(--blue);background:transparent;color:var(--blue);cursor:pointer}
+.pt .ptt{font-weight:600;font-size:17px;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
+.pt .hint{margin:0 0 10px}
+.pt .row{margin-bottom:10px}
+.pt input[type=text]{font-size:18px}
+.chk{font-size:14px;color:var(--blue);margin-top:10px}
+.plane{border-color:var(--blue);font-size:16px}
+.rows{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.rr{display:flex;gap:10px;align-items:flex-start;margin:8px 0;font-size:15px}
+.rr .muted{color:var(--muted);font-size:14px}
+.dot{flex:0 0 12px;height:12px;border-radius:50%;margin-top:5px}
+.dot.g{background:var(--ok)} .dot.o{background:#E3A24F} .dot.r{background:var(--warn)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Campo P2</h1><button id="theme" type="button">Chiaro</button></header>
+<nav class="tabs" id="tabs">
+<button type="button" data-p="1">Iperfocale</button><button type="button" data-p="3">Tilt</button><button type="button" data-p="4">Swing</button><button type="button" data-p="5">Tilt + Swing</button><button type="button" data-p="6">Foto</button><button type="button" data-p="7">Ritratto</button><button type="button" data-p="8">Macro</button>
+</nav>
+<div id="pg1">
+<div id="mvWarn"></div>
+<h2 style="margin-top:4px">Metodo Sinar</h2>
+<div class="chips" id="sinChips" style="margin-bottom:12px"></div>
+<div id="sinBox" hidden>
+<p class="intro">Metti a fuoco sul punto più lontano e poi sul più vicino, e leggi la scala del posteriore contro il puntino bianco. L'app ti dice il diaframma che serve e lo confronta con quello impostato sotto.</p>
+<div class="card">
+  <div class="pair2">
+    <div><label class="lab" for="r1">Lettura lontano (cm)</label><input id="r1" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 1,74"></div>
+    <div><label class="lab" for="r2">Lettura vicino (cm)</label><input id="r2" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 2,17"></div>
+  </div>
+  <div class="row" style="margin-top:14px"><label class="lab" for="ns">Diaframma letto sulla manopola Sinar (facoltativo)</label>
+  <input id="ns" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 22"></div>
+</div>
+<div id="sinOut"></div>
+<p class="note">Formula: diaframma = differenza in mm / (2·c). La manopola, tarata per il 5x7, viene corretta di 1 stop (criterio normale) o 2 stop (super preciso).</p>
+</div>
+
+<div class="card">
+  <div class="row"><span class="lab">Focale (mm)</span><div class="chips" id="fChips"></div></div>
+  <div class="row"><span class="lab">Diaframma</span><div class="chips" id="wChips" style="margin-bottom:8px"></div><div class="chips small" id="nChips"></div></div>
+  <div class="row"><span class="lab">Criterio di nitidezza</span><div class="chips" id="cChips"></div></div>
+</div>
+
+<h2>Iperfocale</h2>
+<div class="result">
+  <div class="big" id="H">0<small>m</small></div>
+  <div class="sub" id="Hsub"></div>
+  <div id="Htrick"></div>
+  <div class="note" id="diff"></div>
+</div>
+<div class="card bosch">
+  <span class="lab">Il Bosch, per lo sgabello e il punto più vicino</span>
+  <div>Func, misurazione indiretta, <b>lunghezza indiretta</b>. Retro del GLM all'altezza del centro dell'obiettivo (il Bosch misura dal bordo posteriore), GLM dritto. Lo sgabello e il terreno vicino stanno <b>più in basso dell'obiettivo</b>: inclina il GLM in basso finché la croce è sul punto, e premi. Nell'app scrivi il <b>numero grande</b> in basso: è la distanza orizzontale.</div>
+</div>
+<div class="card">
+  <label class="lab" for="s">Dove metti lo sgabello · lunghezza indiretta · numero grande (m)</label>
+  <input id="s" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 10,8">
+  <div class="hint" id="sHint"></div>
+  <dl id="sDl" hidden></dl>
+  <div class="note" id="sNote"></div>
+</div>
+<div class="rule">Nel dubbio sbaglia verso il lontano, mai verso il vicino.</div>
+
+
+
+<div class="sec">
+<h2>Oggetto più vicino</h2>
+<div class="chips" id="vChips" style="margin-bottom:12px"></div>
+<div id="vBox" hidden>
+<div class="card">
+  <div class="row"><span class="lab">Cos'è il primo piano vicino</span><div class="chips" id="kChips"></div></div>
+  <div class="row" id="rowT"><label class="lab" for="u">Terreno: punto più vicino che entra nell'inquadratura · lunghezza indiretta · numero grande (m)</label>
+  <input id="u" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 3"></div>
+  <div class="row" id="rowM"><label class="lab" for="um" id="umLab">Muro: punto più vicino che entra nell'inquadratura · lunghezza indiretta · numero grande (m)</label>
+  <input id="um" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 4"></div>
+  <div class="note">Col Bosch in <b>lunghezza indiretta</b> mira il punto più vicino del terreno o del muro che entra nell'inquadratura. Per il terreno è il bordo basso dell'inquadratura (sul vetro sta in alto, perché l'immagine è rovesciata). Se è più in basso dell'obiettivo inclina il GLM in basso, e scrivi il numero grande. Il Bosch misura dal suo bordo posteriore (si reimposta a ogni accensione): tieni il bordo posteriore all'altezza della tavoletta dell'obiettivo.</div>
+</div>
+<div id="verd"></div>
+</div>
+</div>
+<div id="cohOut"></div>
+<p class="note">Formule: H = f² / (N·c), nitido da H/2 all'infinito. Limite vicino con il fuoco a s: H·s / (H+s). Sgabello in sicurezza: H + 5%, arrotondato ai 10 cm sopra. Cuneo del tilt alla distanza D: altezza ≈ D·J / H.</p>
+</div>
+<div id="pg3" hidden>
+<div class="h2row"><h2>Tilt anteriore</h2><button class="rst" type="button" id="tlReset">Azzera le misure</button></div>
+<div class="card"><span class="lab">Dalla pagina Iperfocale</span><div class="sub" id="tlSum" style="margin-top:0"></div></div>
+<div class="card bosch">
+  <span class="lab">Il Bosch, per tutte le mire</span>
+  <div>Func, misurazione indiretta, <b>lunghezza indiretta</b>. Retro del GLM all'altezza del centro dell'obiettivo, GLM dritto. Inclini, croce sul punto, premi. Copi <b>d</b> e <b>α</b> dalle righe in alto, e indichi se il punto sta <b>sotto</b> o <b>sopra l'obiettivo</b> (se per mirarlo hai abbassato o alzato il GLM). Il segno dell'angolo non conta: decide il pulsante.</div>
+</div>
+<h2 class="sec">1. Terreno</h2>
+<div class="chips" id="tlTerr"></div>
+<p class="note">Guarda il terreno dall'oggetto vicino verso il fondo.</p>
+<h2 class="sec">2. Il piano di fuoco</h2>
+<div id="tlP1"></div>
+<div id="tlP3"></div>
+<div id="tlPlane"></div>
+<h2 class="sec">3. L'oggetto vicino</h2>
+<div id="tlP2"></div>
+<h2 class="sec">4. Cosa deve restare nitido</h2>
+<span class="lab">Vicino, col laser (facoltativo)</span>
+<div id="tlNear"></div>
+<button class="btn2" type="button" id="tlAddNear">+ aggiungi punto vicino</button>
+<span class="lab" style="margin-top:16px">Lontano, solo l'angolo (facoltativo)</span>
+<div id="tlFar"></div>
+<button class="btn2" type="button" id="tlAddFar">+ aggiungi punto lontano</button>
+<h2 class="sec">5. Risultato</h2>
+<div id="tlRes"></div>
+<div id="tlBanco"><h2 class="sec">6. Sul banco</h2>
+<div class="card"><ol class="steps" id="tlSteps"></ol></div></div>
+<p class="note">Per ogni punto: x = d·cos α (orizzontale), y = d·sin α (sotto l'obiettivo). Piano: in piano J = y₁; in pendenza m = (y₃−y₁)/(x₃−x₁), J = y₁ − x₁·m. Tilt = arcsen(f/J). Zona nitida alla distanza x: w = x·J/H. Punto lontano dentro se |m + tan θ| ≤ J/H. Diaframma minimo per un punto a distanza x e scarto h dal piano: N = f²·h / (c·x·J).</p>
+</div>
+<div id="pg4" hidden>
+<h2>Swing anteriore</h2>
+<div class="card"><span class="lab">Dalla pagina Iperfocale</span><div id="wSum"></div></div>
+<div class="card">
+  <div class="row"><span class="lab">Il muro è sul lato</span><div class="chips" id="wlChips"></div></div>
+  <div class="row"><span class="lab">Il muro</span><div class="chips" id="wtChips"></div></div>
+  <div class="row" id="rowWJ"><label class="lab" for="wJ">Distanza del muro di lato (m): Bosch in misura continua, fai scorrere il raggio lungo il muro e leggi il minimo (è la distanza perpendicolare)</label>
+  <input id="wJ" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 1,50"></div>
+  <div class="row"><label class="lab" for="wNp">Quanto sporge dal muro l'oggetto vicino (m)</label>
+  <input id="wNp" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 0,3"></div>
+</div>
+<div class="card" id="wOblCard" hidden>
+  <span class="lab">Muro che si avvicina o si allontana: due punti col Bosch in bolla (0° sul display). Il Bosch misura dal suo bordo posteriore (si reimposta a ogni accensione): tieni il bordo posteriore all'altezza della tavoletta dell'obiettivo.</span>
+  <div class="pair2" style="margin-top:8px">
+    <div><label class="lab" for="sL" id="wEdgeLab">Al bordo dell'inquadratura (m)</label><input id="sL" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 4,04"></div>
+    <div><label class="lab" for="sC">Al centro dell'inquadratura (m)</label><input id="sC" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 15"></div>
+  </div>
+  <div class="row" style="margin-top:10px"><span class="lab">Inquadratura</span><div class="chips" id="oChips"></div></div>
+  <div class="note">Sul vetro guarda quale dettaglio del muro sta sul bordo e quale al centro (sul vetro l'immagine è rovesciata), poi puntali col mirino del Bosch.</div>
+</div>
+<div id="wOut"></div>
+<div class="card">
+  <span class="lab">Controllo del lontano (facoltativo)</span>
+  <div class="pair2" style="margin-top:8px">
+    <div><label class="lab" for="sDo">Oggetto lontano: distanza (m)</label><input id="sDo" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 20"></div>
+    <div><label class="lab" for="sP">Si stacca dal muro (m)</label><input id="sP" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 3"></div>
+  </div>
+  <div class="row" style="margin-top:10px"><span class="lab">Sul lato opposto al muro c'è uno sfondo lontano (cielo, paesaggio)?</span><div class="chips" id="wbChips"></div></div>
+</div>
+<div id="wVerd"></div>
+<div class="card"><span class="lab">Sul banco, passo per passo</span><ol class="steps" id="wSteps"></ol></div>
+<p class="note">Formule: swing = arcsen(f / J), con J la distanza dall'obiettivo alla cerniera, presa di lato. Cuneo alla distanza D: spessore ≈ D·J / H per lato. Sfondo all'infinito sul lato opposto: serve J ≥ H · tan(angolo del bordo).</p>
+</div>
+<div id="pg5" hidden>
+<h2>Tilt + Swing</h2>
+<div class="card"><span class="lab">Dalla pagina Iperfocale</span><div id="qSum"></div></div>
+<div class="card">
+  <div class="row"><span class="lab">Cosa metti a fuoco</span><div class="chips" id="qkChips"></div></div>
+  <div class="note" id="qkNote"></div>
+  <div class="row" id="qSideRow"><span class="lab">Il muro è sul lato</span><div class="chips" id="qsChips"></div></div>
+  <div class="row" id="qPrRow"><span class="lab">Terreno e muro sono due piani diversi: il piano di fuoco è uno solo. Scegli</span><div class="chips" id="qpChips"></div></div>
+  <div class="row"><span class="lab">Inquadratura</span><div class="chips" id="qoChips"></div></div>
+</div>
+<div class="card" id="q3Card">
+  <span class="lab">Tre punti del piano col Bosch in misura di lunghezza: distanza e angolo verso il basso. Il Bosch misura dal suo bordo posteriore (si reimposta a ogni accensione): tieni il bordo posteriore all'altezza della tavoletta dell'obiettivo. Calibra l'inclinometro prima dell'uscita.</span>
+  <span class="lab" style="margin-top:10px">Punto sul bordo sinistro</span>
+  <div class="pair2"><div><label class="lab" for="qLd">Distanza (m)</label><input id="qLd" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 6,16"></div>
+  <div><label class="lab" for="qLa">Angolo (° verso il basso)</label><input id="qLa" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 12,9"></div></div>
+  <span class="lab" style="margin-top:10px">Punto al centro</span>
+  <div class="pair2"><div><label class="lab" for="qCd">Distanza (m)</label><input id="qCd" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 8,16"></div>
+  <div><label class="lab" for="qCa">Angolo (° verso il basso)</label><input id="qCa" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 11,3"></div></div>
+  <span class="lab" style="margin-top:10px">Punto sul bordo destro</span>
+  <div class="pair2"><div><label class="lab" for="qRd">Distanza (m)</label><input id="qRd" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 6,27"></div>
+  <div><label class="lab" for="qRa">Angolo (° verso il basso)</label><input id="qRa" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 16,9"></div></div>
+  <div class="note">Sul vetro scegli un dettaglio del piano sul bordo sinistro, uno al centro e uno sul bordo destro (sul vetro l'immagine è rovesciata), poi puntali col mirino del Bosch. Angolo sopra l'orizzonte: col meno.</div>
+</div>
+<div class="card" id="qBCard">
+  <span class="lab">Compromesso: il piano passa per la base del muro, a metà fra terreno e muro (45°). Terreno piano e muro parallelo alla rotaia.</span>
+  <div class="pair2" style="margin-top:8px"><div><label class="lab" for="qJg">Altezza dell'obiettivo da terra (m): Bosch in misura continua verso il basso, il minimo</label><input id="qJg" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 1,60"></div>
+  <div><label class="lab" for="qJw">Distanza del muro di lato (m): Bosch in misura continua lungo il muro, il minimo</label><input id="qJw" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 2,00"></div></div>
+</div>
+<div id="qOut"></div>
+<div class="card" id="qObjCard">
+  <span class="lab">Controllo (facoltativo)</span>
+  <div id="qObjP">
+  <span class="lab" style="margin-top:8px">Oggetto vicino (un cespuglio, un sasso)</span>
+  <div class="pair2"><div><label class="lab" for="q1d">Distanza (m)</label><input id="q1d" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 4"></div>
+  <div><label class="lab" for="q1p">Sporge dal piano (m)</label><input id="q1p" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 0,3"></div></div>
+  <span class="lab" style="margin-top:10px">Oggetto lontano (un albero, una casa)</span>
+  <div class="pair2"><div><label class="lab" for="q2d">Distanza (m)</label><input id="q2d" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 20"></div>
+  <div><label class="lab" for="q2p">Sporge dal piano (m)</label><input id="q2p" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 3"></div></div>
+  </div>
+  <div id="qObjB">
+  <div class="pair2" style="margin-top:8px"><div><label class="lab" for="qMh">Muro: altezza da tenere nitida (m)</label><input id="qMh" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 2"></div>
+  <div><label class="lab" for="qTw">Terreno: larghezza dal piede del muro (m)</label><input id="qTw" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 2"></div></div>
+  <div class="note">Controllati dove il muro entra nell'inquadratura, cioè dove il cuneo è più sottile.</div>
+  </div>
+</div>
+<div id="qVerd"></div>
+<div class="card"><span class="lab">Sul banco, passo per passo</span><ol class="steps" id="qSteps"></ol></div>
+<p class="note">Il piano passa per i punti misurati. La sua intersezione col piano dell'obiettivo dà la cerniera a distanza J: rotazione totale = arcsen(f / J), scomposta in tilt e swing secondo la direzione della cerniera. Cuneo alla distanza D: ≈ D·J / H per lato.</p>
+</div>
+
+<div id="pg6" hidden>
+<h2>Foto</h2>
+<p class="intro">Fotografa la scena col telefono. Vedi le cornici del 4x5 e chiedi un parere. Le misure le prendi tu col Bosch, nelle altre pagine.</p>
+<div class="card">
+  <div class="fbtns"><button class="fbtn" type="button" id="mOpen">Apri mirino</button><label class="fbtn" for="fIn">Scatta o importa</label></div>
+  <input id="fIn" type="file" accept="image/*" hidden>
+  <div id="mBox" hidden>
+    <div id="mWrap"><video id="mVid" playsinline muted autoplay></video><canvas id="mCan"></canvas></div>
+    <div class="fbtns" style="margin-top:10px"><button class="fbtn" type="button" id="mShot">Cattura</button><button class="fbtn" type="button" id="mClose">Chiudi</button></div>
+  </div>
+  <div id="mErr"></div>
+</div>
+<div class="card">
+  <div class="row"><span class="lab">Obiettivo sul banco (mm)</span><div class="chips" id="pfF"></div></div>
+  <div class="row"><span class="lab">Inquadratura</span><div class="chips" id="poChips"></div></div>
+  <div class="row"><span class="lab">Zoom del telefono (iPhone 16 Pro Max)</span><div class="chips small" id="pfChips"></div><div class="note" id="pfNote"></div></div>
+</div>
+<div class="card" id="fCard" hidden>
+  <div id="fWrap"><canvas id="fCan"></canvas></div>
+  <div class="leg"><span><i></i>cornice del tuo obiettivo</span><span><i class="d"></i>obiettivo più corto e più lungo</span></div>
+  <div class="row" style="margin-top:12px"><span class="lab">Tocca la foto per segnare</span><div class="chips small" id="mkChips"></div></div>
+  <div id="fFit"></div>
+</div>
+<div class="card" id="fTodo" hidden><span class="lab">Cosa misurare col Bosch</span><ol class="steps" id="fTodoL"></ol></div>
+<div class="card" id="aiCard" hidden>
+  <span class="lab">Parere sulla foto</span>
+  <label class="lab" for="aiQ">Cosa vuoi ottenere (facoltativo)</label>
+  <textarea id="aiQ" placeholder="es. tutto nitido dal sasso in primo piano al castello"></textarea>
+  <button class="btn" type="button" id="aiGo">Chiedi il parere</button>
+  <details id="aiSet"><summary>Chiave API (una volta sola, resta su questo iPhone)</summary>
+    <label class="lab" for="aiKey" style="margin-top:8px">Chiave Anthropic</label><input id="aiKey" type="password" autocomplete="off" placeholder="sk-ant-...">
+    <label class="lab" for="aiMod" style="margin-top:8px">Modello</label><input id="aiMod" type="password" autocomplete="off" style="-webkit-text-security:none">
+  </details>
+  <div id="aiOut" class="ai"></div>
+</div>
+<p class="note">Cornici calcolate per soggetto lontano, formato utile 120 x 96 mm, decentramenti a zero. Con la messa a fuoco vicina il campo si stringe un po'. Il parere è un'opinione: i numeri li prendi tu.</p>
+</div>
+
+<div id="pg7" hidden>
+<h2>Ritratto</h2>
+<p class="intro">Pagina indipendente: obiettivo, diaframma e criterio qui non toccano le altre pagine. Prima il fuoco, poi l'esposizione.</p>
+<h2 style="margin-top:4px">1. Inquadratura</h2>
+<div class="card">
+  <div class="row"><span class="lab">Obiettivo (mm)</span><div class="chips" id="rfChips"></div></div>
+  <div class="row"><span class="lab">Inquadratura</span><div class="chips" id="roChips"></div></div>
+  <div class="row"><label class="lab" for="rH">Altezza del soggetto (m)</label><input id="rH" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 1,78"></div>
+  <div class="row"><span class="lab">Tipo di ritratto</span><div class="chips" id="rtChips"></div></div>
+</div>
+<div class="result" id="rStima"></div>
+<div class="card">
+  <div class="row"><span class="lab">Dopo aver composto sul vetro, misura</span><div class="chips" id="rmChips"></div></div>
+  <div class="row" id="rRowD"><label class="lab" for="rD">Distanza obiettivo-occhi col Bosch (m)</label><input id="rD" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 0,48"></div>
+  <div class="row" id="rRowE"><label class="lab" for="rE">Allungamento del soffietto oltre l'infinito (mm)</label><input id="rE" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 72"></div>
+  <div class="note" id="rMNote"></div>
+</div>
+<div id="rMis"></div>
+<h2 style="margin-top:18px">2. Messa a fuoco e profondità di campo</h2>
+<div class="card">
+  <div class="row"><span class="lab">Criterio di nitidezza</span><div class="chips" id="rcChips"></div></div>
+  <div class="row"><span class="lab">Come ricavi la profondità</span><div class="chips" id="rpmChips"></div></div>
+  <div id="rpS">
+    <div class="pair2"><div><label class="lab" for="rr1">Fuoco sulla punta del naso (cm)</label><input id="rr1" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 21,8"></div>
+    <div><label class="lab" for="rr2">Fuoco sul retro dell'orecchio (cm)</label><input id="rr2" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 22,5"></div></div>
+    <div class="note">Metti a fuoco col posteriore (non col davanti: da vicino cambieresti l'inquadratura) e leggi la scala contro il puntino bianco.</div>
+  </div>
+  <div id="rpE">
+    <div class="row"><span class="lab">Cosa deve essere nitido</span><div class="chips" id="rdChips"></div></div>
+    <div class="row" id="rRowDep"><label class="lab" for="rDep">Profondità da tenere nitida (cm)</label><input id="rDep" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 15"></div>
+  </div>
+  <div class="row"><label class="lab" for="rBg">Sfondo: quanto sta dietro il soggetto (m, facoltativo)</label><input id="rBg" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 2"></div>
+</div>
+<div id="rFuoco"></div>
+<h2 style="margin-top:18px">3. Esposizione col Sekonic L-858D</h2>
+<div class="card">
+  <div class="row"><span class="lab">Luce</span><div class="chips" id="rsChips"></div></div>
+  <div class="row"><span class="lab">Diaframma di lavoro (dal blocco 2, puoi cambiarlo)</span><div class="chips small" id="rnChips"></div></div>
+  <div class="row" id="rRowT"><span class="lab">Tempo di posa</span><div class="chips small" id="rtsChips"></div></div>
+</div>
+<div id="rSek"></div>
+<div class="card" id="rCAmb">
+  <div class="pair2"><div><label class="lab" for="rAmb">Ambiente: tempo letto a questo diaframma</label><input id="rAmb" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 1/15"></div><div><label class="lab" for="rAmbS">Facoltativo: lato in ombra del viso</label><input id="rAmbS" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 1/4"></div></div>
+  <div class="note" id="rAmbNote"></div>
+</div>
+<div class="card" id="rCFl">
+  <div class="row" id="rRowK"><span class="lab">Riempimento rispetto alla principale</span><div class="chips small" id="rkChips"></div></div>
+  <div class="row" id="rRowP"><span class="lab">Schiarita</span><div class="chips small" id="rpChips"></div></div>
+  <div class="row" id="rRowRim"><span class="lab">Luce dei capelli rispetto alla principale</span><div class="chips small" id="rrimChips"></div></div>
+  <div class="row" id="rRowBz"><span class="lab">Fondale grigio medio: in che zona lo vuoi</span><div class="chips small" id="rbzChips"></div></div>
+  <span class="lab" style="margin-top:6px">Letture del Sekonic, una luce alla volta (le altre spente), con la <b>cupola abbassata</b> puntata verso quella luce dalla posizione del viso. Scrivi diaframma e decimi, per esempio 22 5. Alla fine, tutte accese, controllo con la cupola alzata verso l'obiettivo: deve dare il diaframma di lavoro.</span>
+  <div class="pair2" style="margin-top:6px"><div><label class="lab" for="rLK">Principale</label><input id="rLK" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 22 5"></div><div id="rWF"><div><label class="lab" for="rLF">Riempimento</label><input id="rLF" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 16 3"></div></div><div id="rWP"><div><label class="lab" for="rLP">Lato in ombra col pannello</label><input id="rLP" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 11 7"></div></div><div id="rWR"><div><label class="lab" for="rLR">Capelli</label><input id="rLR" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 32"></div></div><div id="rWB"><div><label class="lab" for="rLB">Fondale (cupola verso l'obiettivo)</label><input id="rLB" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 22"></div></div></div>
+</div>
+<div id="rEsp"></div>
+<h2 style="margin-top:18px">4. Sviluppo</h2>
+<div class="card">
+  <span class="lab">Differenza in stop dalla lettura incidente al viso, letta con lo spot in modalità Contrasto (meno = più scuro)</span>
+  <div class="pair2" style="margin-top:8px"><div><label class="lab" for="rZs">Ombra con dettaglio (capelli, abito scuro)</label><input id="rZs" type="text" inputmode="decimal" autocomplete="off" placeholder="es. -2,5"></div><div><label class="lab" for="rZh">Alta luce con dettaglio (camicia bianca, riflesso sulla pelle)</label><input id="rZh" type="text" inputmode="decimal" autocomplete="off" placeholder="es. +2,5"></div></div>
+  <div class="note">Sul Sekonic: memoria vuota, misura incidente al viso e premi memoria (solo questa: il riferimento del Contrasto è la media di tutto ciò che è in memoria). Passa allo spot e <b>disattiva la compensazione esposizione col suo tasto</b>, altrimenti il −2,0 dello spot sposta le differenze di 2 stop. In modalità Contrasto la differenza si legge tenendo premuto il tasto di misura. Alla fine riattiva la compensazione. La lettura incidente mette un grigio medio in zona V: una superficie a +1 sta in zona VI, a −2 in zona III.</div>
+</div>
+<div id="rSvil"></div>
+<p class="note">Formato utile 120 x 96 mm. Ingrandimento m = lato del fotogramma / altezza inquadrata = f / (distanza − f) = allungamento / f. Distanza = f · (1 + 1/m). Soffietto = f · (1 + m). Profondità: in pellicola Δ = profondità · m²; diaframma N = Δ / (2 · c · (1 + m)). Diffrazione: dischetto = 2,44 · 0,00055 mm · N · (1 + m); diaframma ottimale N · (1 + m) = √(Δ / (2 · 2,44 · 0,00055)); somma = √(sfocato² + diffrazione²). Sfondo a distanza B dietro il soggetto: sfocato ≈ f · m / N · B / (distanza + B). Sviluppo: zona = V + differenza dalla lettura incidente; se l'ombra con dettaglio cade sotto la zona III si aggiunge esposizione, poi alte luci in VIII = N, IX = N−1, X = N−2, VII = N+1. Le stime dei tagli vengono dalle proporzioni medie (testa circa 1/7,5 dell'altezza in un adulto, circa 1/6 in un bambino).</p>
+</div>
+<div id="pg8" hidden>
+<h2>Macro</h2>
+<p class="intro">Pagina indipendente: fiori, foglie, cortecce, insetti, anche oltre 1:1. Prima il fuoco, poi l'esposizione.</p>
+<h2 style="margin-top:4px">1. Ingrandimento</h2>
+<div class="card">
+  <div class="row"><span class="lab">Obiettivo (mm)</span><div class="chips" id="kfChips"></div></div>
+  <div class="row"><span class="lab">Inquadratura</span><div class="chips" id="koChips"></div></div>
+  <div class="row"><span class="lab">Soffietti montati</span><div class="chips" id="knChips"></div></div>
+  <div class="pair2"><div><label class="lab" for="kL">Allungamento massimo di un soffietto (mm, misuralo una volta)</label><input id="kL" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 420"></div><div><label class="lab" for="kS">Soggetto da inquadrare, lato lungo (cm)</label><input id="kS" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 6"></div></div>
+</div>
+<div class="result" id="kStima"></div>
+<div class="card">
+  <div class="row"><span class="lab">Dopo aver composto sul vetro, misura</span><div class="chips" id="kmChips"></div></div>
+  <div class="pair2" id="kWR"><div><label class="lab" for="kOv">Righello: tratto vero (cm)</label><input id="kOv" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 2"></div><div><label class="lab" for="kOi">Lo stesso tratto sul vetro (mm)</label><input id="kOi" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 40"></div></div>
+  <div id="kWE"><div><label class="lab" for="kE">Allungamento del soffietto oltre l'infinito (mm)</label><input id="kE" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 150"></div></div>
+  <div class="note" id="kMNote"></div>
+</div>
+<div id="kMis"></div>
+<h2 style="margin-top:18px">2. Messa a fuoco e profondità di campo</h2>
+<div class="card">
+  <div class="row"><span class="lab">Criterio di nitidezza</span><div class="chips" id="kcChips"></div></div>
+  <div class="row"><span class="lab">Come ricavi la profondità</span><div class="chips" id="kpmChips"></div></div>
+  <div class="pair2" id="kpS"><div><label class="lab" for="kr1">Fuoco sul punto più vicino (cm)</label><input id="kr1" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 30,2"></div><div><label class="lab" for="kr2">Fuoco sul punto più lontano (cm)</label><input id="kr2" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 31,0"></div></div>
+  <div id="kpE"><div class="row"><span class="lab">Cosa deve essere nitido</span><div class="chips" id="kdChips"></div></div>
+  <div id="kWD"><div><label class="lab" for="kDep">Profondità da tenere nitida (mm)</label><input id="kDep" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 8"></div></div></div>
+</div>
+<div id="kFuoco"></div>
+<h2 style="margin-top:18px">3. Esposizione col Sekonic L-858D</h2>
+<div class="card">
+  <div class="row"><span class="lab">Luce</span><div class="chips" id="ksChips"></div></div>
+  <div class="row"><span class="lab">Diaframma di lavoro (dal blocco 2, puoi cambiarlo)</span><div class="chips small" id="knnChips"></div></div>
+  <div class="pair2" id="kWA"><div><label class="lab" for="kAmb">Luce naturale: tempo letto a questo diaframma</label><input id="kAmb" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 1/2"></div><div><label class="lab" for="kAmbS">Facoltativo: lato in ombra</label><input id="kAmbS" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 2"></div></div>
+  <div class="pair2" id="kWF"><div><label class="lab" for="kLK">Flash da solo (diaframma e decimi)</label><input id="kLK" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 22 5"></div><div><label class="lab" for="kLP">Lato in ombra col pannello</label><input id="kLP" type="text" inputmode="decimal" autocomplete="off" placeholder="es. 16"></div></div>
+</div>
+<div id="kEsp"></div>
+<h2 style="margin-top:18px">4. Sviluppo</h2>
+<div class="card">
+  <span class="lab">Differenza in stop dalla lettura incidente, letta con lo spot in modalità Contrasto (meno = più scuro)</span>
+  <div class="pair2" style="margin-top:8px"><div><label class="lab" for="kZs">Ombra con dettaglio</label><input id="kZs" type="text" inputmode="decimal" autocomplete="off" placeholder="es. -2"></div><div><label class="lab" for="kZh">Alta luce con dettaglio</label><input id="kZh" type="text" inputmode="decimal" autocomplete="off" placeholder="es. +3"></div></div>
+  <div class="note">Memoria vuota, incidente sul soggetto e memoria (solo questa). Poi spot, con la compensazione esposizione disattivata col suo tasto, e la differenza si legge tenendo premuto il tasto di misura.</div>
+</div>
+<div id="kSvil"></div>
+<p class="note">Formato utile 120 x 96 mm. m = lato del fotogramma / soggetto = immagine / oggetto = allungamento / f. Soffietto = f · (1 + m), distanza = f · (1 + 1/m), fattore = (1 + m)². Profondità in pellicola Δ = profondità · m²; N = Δ / (2 · c · (1 + m)); diffrazione = 2,44 · 0,00055 · N · (1 + m); somma = √(sfocato² + diffrazione²). Reciprocità FP4+: tempo^1,48 oltre 1/2 s.</p>
+</div>
+</div>
+
+<script>
+const F=[75,90,120,150,210,250,300];
+const NT=[2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22,25,29,32,36,40,45,51,57,64];
+const WHOLE=[2.8,4,5.6,8,11,16,22,32,45,64];
+const C=[{v:0.1,t:"Normale 0,1"},{v:0.05,t:"Severo 0,05"}];
+let st={f:150,n:22,c:0.1,u:"",s:"",v:false,tp:false,J:"1,80",pg:1,r1:"",r2:"",ns:"",a1:"",d2:"",a2:"",Dt:"",Ht:"",or:"h",sL:"",sC:"",sR:"",sDo:"",sP:"",qLd:"",qLa:"",qCd:"",qCa:"",qRd:"",qRa:"",q1d:"",q1p:"",q2d:"",q2p:"",ho:"",theme:"dark",whole:true,pf:24};
+try{const s=JSON.parse(localStorage.getItem("campoP2")||"null");if(s)st=Object.assign(st,s);}catch(e){}
+if(st.pg===2) st.pg=1;
+function save(){try{localStorage.setItem("campoP2",JSON.stringify(st));}catch(e){}}
+const fmt=(x,d=1)=>x.toLocaleString("it-IT",{minimumFractionDigits:d,maximumFractionDigits:d});
+const fN=n=>"f/"+String(n).replace(".",",");
+const $=id=>document.getElementById(id);
+const num=v=>{const x=parseFloat(String(v).trim().replace(",","."));return isFinite(x)?x:NaN;};
+function chips(el,items,cur,lab,set){
+  el.innerHTML="";
+  items.forEach(it=>{const v=it.v??it;const b=document.createElement("button");b.type="button";
+    b.textContent=it.t??lab(v);b.setAttribute("aria-pressed",v===cur);
+    b.onclick=()=>{set(v);save();render();};el.appendChild(b);});
+}
+const f0exp=(f,u)=>f*u*1000/(u*1000-f)-f;
+const H=(f,n,c)=>f*f/(n*c)/1000; // metri
+const NW=[2.8,4,5.6,8,11,16,22,32,45,64];
+let N=NT;
+const up=x=>N.find(n=>n>=x-1e-9);
+function dist(m){return m>=100?fmt(m,0)+" m":fmt(m,m<10?2:1)+" m";}
+function bar(u,A){
+  const W=320,X0=14,X1=300;
+  const maxD=Math.max((A.hi===Infinity?A.sg*1.5:A.hi*1.25),(u||0)*1.4,A.near*2);
+  const x=d=>X0+(Math.min(d,maxD)/maxD)*(X1-X0);
+  const hiX=A.hi===Infinity?X1:x(A.hi);
+  let g=`<svg viewBox="0 0 ${W} 74" role="img" aria-label="Zona nitida">`;
+  g+=`<line x1="${X0}" y1="34" x2="${X1}" y2="34" stroke="var(--line)" stroke-width="2"/>`;
+  g+=`<rect x="${x(A.near)}" y="27" width="${X1-x(A.near)}" height="14" rx="3" fill="var(--blue-soft)" stroke="var(--blue)"/>`;
+  g+=`<text x="${X1+4}" y="38" class="lb">∞</text>`;
+  g+=`<rect x="${x(A.lo)}" y="46" width="${hiX-x(A.lo)}" height="6" rx="3" fill="var(--ok)" opacity=".55"/>`;
+  g+=`<circle cx="${X0}" cy="34" r="5" fill="var(--ink)"/><text x="${X0-6}" y="18">obiettivo</text>`;
+  g+=`<text x="${x(A.near)}" y="20" text-anchor="middle" class="lb">${fmt(A.near,1)}</text>`;
+  g+=`<path d="M${x(A.sg)} 44 l-5 10 h10 z" fill="var(--warn)"/><text x="${x(A.sg)}" y="68" text-anchor="middle" class="lb">sgabello ${fmt(A.sg,1)}</text>`;
+  if(u){g+=`<line x1="${x(u)}" y1="24" x2="${x(u)}" y2="44" stroke="var(--ink)" stroke-width="2"/><text x="${x(u)}" y="${x(u)-x(A.near)<30?10:20}" text-anchor="middle">oggetto ${fmt(u,1)}</text>`;}
+  return `<div class="bar">${g}</svg><div class="note">Azzurro: zona nitida. Verde: dove puoi mettere lo sgabello.</div></div>`;
+}
+function sgGraph(s,h,col){
+  const X0=16,X1=300,x=d=>d===Infinity?X1:X0+(X1-X0)*d/(d+h);
+  const near=h*s/(h+s), far=s>=h?Infinity:h*s/(h-s);
+  let g=`<svg viewBox="0 0 330 100" role="img" aria-label="Zona nitida">`;
+  g+=`<line x1="${X0}" y1="44" x2="${X1}" y2="44" stroke="var(--line)" stroke-width="2"/>`;
+  g+=`<rect x="${x(near)}" y="34" width="${x(far)-x(near)}" height="20" rx="4" fill="var(--glass)"/>`;
+  g+=`<rect x="${x(near)}" y="34" width="${x(far)-x(near)}" height="20" rx="4" fill="${col}" fill-opacity=".18" stroke="${col}" stroke-width="1.5"/>`;
+  g+=`<line x1="${x(h)}" y1="26" x2="${x(h)}" y2="62" stroke="var(--muted)" stroke-dasharray="3 3"/><text x="${x(h)}" y="18" text-anchor="middle">iperfocale ${fmt(h,1)}</text>`;
+  g+=`<circle cx="${X1+12}" cy="44" r="10" fill="${col}"/><text x="${X1+12}" y="48" text-anchor="middle" style="fill:#fff;font-size:13px;font-weight:700">∞</text>`;
+  g+=`<circle cx="${X0}" cy="44" r="5" fill="var(--ink)"/><text x="${X0-6}" y="74">obiettivo</text>`;
+  g+=`<text x="${x(near)}" y="74" text-anchor="middle" class="lb">${fmt(near,2)}</text>`;
+  if(far!==Infinity) g+=`<text x="${x(far)}" y="74" text-anchor="middle" class="lb">${fmt(far,1)}</text>`;
+  g+=`<path d="M${x(s)} 56 l-7 12 h14 z" fill="var(--ink)"/><text x="${x(s)}" y="92" text-anchor="middle" class="lb">sgabello ${fmt(s,1)}</text>`;
+  return `<div class="bar">${g}</svg></div>`;
+}
+function setNmv(n,from){if(!st.nFrom){st.nPrev=st.n;} st.n=n; st.nFrom=from; save(); render();}
+const safeS=h=>Math.ceil(h*1.05*10)/10;
+// ===== Tilt col Bosch =====
+const TL=(()=>{
+  const R=Math.PI/180, P0=()=>({n:"",d:"",a:"",up:false});
+  const m2=x=>fmt(x,2)+" m", sg=x=>(x>=0?"+":"−")+fmt(Math.abs(x),1)+"°";
+  const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+  const Hm=f=>H(f,st.n,st.c), upN=x=>NW.find(n=>n>=x-1e-9);
+  function TS(){let t=st.tl; if(!t||typeof t!=="object") t=st.tl={};
+    if(!["piano","discesa","salita","lato"].includes(t.terr)) t.terr="piano";
+    for(const k of ["p1","p2","p3"]) if(!t[k]||typeof t[k]!=="object") t[k]=P0();
+    if(!Array.isArray(t.near)) t.near=[]; if(!Array.isArray(t.far)) t.far=[];
+    return t;}
+  function xy(p){if(!p)return null;const d=num(p.d),a=Math.abs(num(p.a));if(!(d>0)||!isFinite(a)||a>=90)return null;const s=p.up?-1:1;return{x:d*Math.cos(a*R),y:s*d*Math.sin(a*R)};}
+  function obj(id){const t=TS();if(id.startsWith("near-"))return t.near[+id.slice(5)];if(id.startsWith("far-"))return t.far[+id.slice(4)];return t[id];}
+  function nearInfo(){const h=Hm(st.f), safe=safeS(h), sv=num(st.s), sUse=sv>0?sv:safe, u=st.v&&(st.k||"t").includes("t")?num(st.u):NaN;
+    return {h,safe,sUse,nearU:h*sUse/(h+sUse),nearSafe:h*safe/(h+safe),u};}
+  function upChips(id,p){return `<div class="chips small" style="margin-top:8px"><button type="button" data-ttog="${id}" data-up="0" aria-pressed="${!p.up}">sotto l'obiettivo</button><button type="button" data-ttog="${id}" data-up="1" aria-pressed="${!!p.up}">sopra l'obiettivo</button></div>`;}
+  function card(id,title,hint,p,opt={}){
+    const nm=opt.name?`<div class="row"><label class="lab">Cos'è</label><input type="text" data-tid="${id}" data-tk="n" value="${esc(p.n)}" placeholder="es. albero"></div>`:"";
+    const dd=opt.angleOnly?"":`<div><label class="lab">d · riga in alto (m)</label><input type="text" inputmode="decimal" autocomplete="off" data-tid="${id}" data-tk="d" value="${esc(p.d)}" placeholder="es. 4,39"></div>`;
+    const aa=`<div><label class="lab">α ${opt.angleOnly?"· angolo sul display":"· riga in alto"} (°)</label><input type="text" inputmode="decimal" autocomplete="off" data-tid="${id}" data-tk="a" value="${esc(p.a)}" placeholder="es. 24,2"></div>`;
+    const del=opt.del?`<button type="button" class="x" data-tdel="${id}">Togli</button>`:"";
+    return `<div class="card pt"><div class="ptt"><span id="tlttl-${id}">${title}</span>${del}</div>${hint?`<div class="hint">${hint}</div>`:""}${nm}<div class="${opt.angleOnly?"":"pair2"}">${dd}${aa}</div>${upChips(id,p)}${opt.angleOnly?"":`<div class="chk" id="tlchk-${id}"></div>`}</div>`;
+  }
+  function build(){
+    const t=TS();
+    $("tlTerr").innerHTML=[["piano","In piano"],["discesa","In discesa"],["salita","In salita"],["lato","Pende di lato"]].map(([v,x])=>`<button type="button" data-tterr="${v}" aria-pressed="${t.terr===v}">${x}</button>`).join("");
+    $("tlP1").innerHTML=card("p1","Punto 1 · Piede dell'oggetto vicino","Mira dove l'oggetto vicino tocca terra, davanti.",t.p1);
+    $("tlP3").innerHTML=t.terr!=="discesa"&&t.terr!=="salita"?"":card("p3","Punto 3 · Terreno lontano","Un punto del terreno lontano, sulla stessa pendenza, dove vuoi la nitidezza.",t.p3,{name:true});
+    $("tlP2").innerHTML=card("p2","Punto 2 · Cima","Mira la cima dell'oggetto vicino, anche se è più indietro del piede.",t.p2);
+    $("tlNear").innerHTML=t.near.map((p,i)=>card("near-"+i,esc(p.n)||"Punto vicino","",p,{name:true,del:true})).join("")||`<p class="note" style="margin:0 0 8px">Nessun punto. Aggiungi quello che deve restare nitido col laser: l'acqua, un pontile, un guardrail, un albero, una casa.</p>`;
+    $("tlFar").innerHTML=t.far.map((p,i)=>card("far-"+i,esc(p.n)||"Punto lontano","Croce sulla cima: il laser non arriva, ma l'angolo in alto sul display c'è.",p,{name:true,del:true,angleOnly:true})).join("")||`<p class="note" style="margin:0 0 8px">Nessun punto. Aggiungi montagne o colline lontane.</p>`;
+  }
+  function plane(terr){
+    const t=TS(), a=xy(t.p1); if(!a) return {err:"Scrivi d e α del Punto 1."};
+    if(terr==="piano") return {m:0,J:a.y};
+    const b=xy(t.p3); if(!b) return {err:"Scrivi d e α del Punto 3."};
+    if(Math.abs(b.x-a.x)<0.5) return {err:"Il Punto 3 è troppo vicino al Punto 1: prendilo più lontano."};
+    const m=(b.y-a.y)/(b.x-a.x); return {m,J:a.y-a.x*m};
+  }
+  function evalAll(pl,terr,f=st.f){
+    const t=TS(), h=Hm(f), AJ=Math.abs(pl.J), k=AJ/h, rows=[];
+    const near=[{n:"Cima dell'oggetto vicino",p:t.p2}];
+    if(terr==="piano"&&xy(t.p3)) near.push({n:(t.p3.n||"Terreno lontano")+" (Punto 3)",p:t.p3});
+    t.near.forEach(o=>near.push({n:o.n||"Punto vicino",p:o}));
+    for(const o of near){const q=xy(o.p); if(!q) continue;
+      const dev=pl.J+pl.m*q.x-q.y, w=q.x*k, r=Math.abs(dev)/w;
+      rows.push({n:o.n,r,near:true,x:q.x,dev,w,Nreq:f*f*Math.abs(dev)/(st.c*q.x*AJ*1000),Jreq:Math.abs(dev)*h/q.x,
+        t:`${m2(Math.abs(dev))} ${dev>=0?"sopra":"sotto"} il piano, la zona nitida arriva a ${m2(w)}`});}
+    for(const o of t.far){const a=Math.abs(num(o.a)); if(!isFinite(a)||a>=90) continue;
+      const th=(o.up?1:-1)*a, e=pl.m+Math.tan(th*R), r=Math.abs(e)/k;
+      const lim=th>=0?Math.atan(k-pl.m)/R:-Math.atan(k+pl.m)/R;
+      rows.push({n:o.n||"Punto lontano",r,near:false,Nreq:f*f*Math.abs(e)/(st.c*AJ*1000),Jreq:Math.abs(e)*h,
+        t:`${sg(th)}, il limite ${th>=0?"in alto":"in basso"} arriva a ${sg(lim)}`});}
+    rows.forEach(o=>o.lv=o.r<=0.9?"g":o.r<=1?"o":"r");
+    return rows;
+  }
+  const score=rows=>rows.filter(r=>r.lv==="r").length*100+rows.filter(r=>r.lv==="o").length;
+  const LV={g:"Verde",o:"Arancio",r:"Rosso"};
+  const tiltOf=(pl,f=st.f)=>{const AJ=Math.abs(pl.J);if(AJ<=f/1000*1.2)return null;return Math.asin(f/1000/AJ)/R*(pl.J>=0?1:-1);};
+  function compute(){
+    const t=TS(), ni=nearInfo(), h=ni.h;
+    $("tlSum").innerHTML=`${st.f} mm · ${fN(st.n)} · criterio ${st.c===0.1?"normale":"severo"} · iperfocale ${m2(h)} · punto più vicino ${ni.u>0?`${m2(ni.u)} (limite vicino ${m2(ni.nearU)})`:"non misurato"}`;
+    for(const id of ["p1","p2","p3",...t.near.map((_,i)=>"near-"+i)]){const el=$("tlchk-"+id); if(!el) continue; const q=xy(obj(id));
+      el.innerHTML=q?`Orizzontale <b>${m2(q.x)}</b>: deve essere uguale al numero grande del Bosch. Dislivello ${m2(Math.abs(q.y))} ${q.y>=0?"sotto":"sopra"} l'obiettivo.`:"Scrivi d e α.";}
+    const stop=html=>{$("tlRes").innerHTML=html||"";$("tlSteps").innerHTML="";$("tlBanco").hidden=true;};
+    if(t.terr==="lato"){$("tlPlane").innerHTML="";stop(`<div class="vd o"><div class="t">Il terreno pende di lato: serve Tilt + Swing.</div><p><button type="button" class="go" data-go="5">Vai a Tilt + Swing</button></p></div>`);return;}
+    const pl=plane(t.terr);
+    if(pl.err){$("tlPlane").innerHTML=`<div class="vd"><p style="margin:0">${pl.err}</p></div>`;stop();return;}
+    let po;
+    if(t.terr==="piano") po=`Piano di fuoco orizzontale: <b>J = ${m2(Math.abs(pl.J))}</b> ${pl.J>=0?"sotto":"sopra"} l'obiettivo (dal Punto 1).`;
+    else{const ang=Math.atan(Math.abs(pl.m))/R, real=ang<1?"praticamente in piano":(pl.m>0?"in discesa":"in salita");
+      po=`Piano di fuoco ${real}: pendenza ${fmt(ang,1)}°, <b>J = ${m2(Math.abs(pl.J))}</b> ${pl.J>=0?"sotto":"sopra"} l'obiettivo.`;
+      if(real!=="praticamente in piano"&&real!=="in "+t.terr) po+=`<div class="warn" style="margin-top:6px">Hai scelto "in ${t.terr}", ma i punti dicono "${real}". Controlla le mire o la scelta.</div>`;}
+    $("tlPlane").innerHTML=`<div class="card plane">${po}</div>`;
+    const tl=tiltOf(pl);
+    if(tl===null){stop(`<div class="vd o"><div class="t">Tilt impossibile.</div><p>Il piano passa quasi per l'obiettivo (J = ${m2(Math.abs(pl.J))}): alza o abbassa la macchina.</p></div>`);return;}
+    const rows=evalAll(pl,t.terr);
+    let o=`<div class="result"><span class="lab">Tilt anteriore · terreno in ${t.terr}</span><div class="big">${sg(tl)}</div><div class="sub">${tl>=0?"Bordo superiore dello standard in avanti, verso la scena.":"Bordo superiore dello standard indietro, verso di te."}</div>`;
+    o+=rows.length?`<div class="rows">${rows.map(r=>`<div class="rr"><span class="dot ${r.lv}"></span><div><b>${LV[r.lv]}: ${esc(r.n)}</b><br><span class="muted">${r.t}</span></div></div>`).join("")}</div>`:`<p class="note">Scrivi la cima dell'oggetto vicino per il controllo.</p>`;
+    o+=`</div>`;
+    if(t.terr!=="piano"&&xy(t.p3)){
+      const pf={m:0,J:xy(t.p1).y}, rf=evalAll(pf,"piano"), tf=tiltOf(pf);
+      if(tf!==null&&score(rf)<score(rows)){
+        const allg=rf.every(r=>r.lv==="g");
+        o+=`<div class="vd g"><div class="t">Meglio "In piano": tilt ${sg(tf)}${allg?", tutto verde":""}.</div><p>${rf.filter(r=>r.lv!=="g").map(r=>LV[r.lv]+": "+esc(r.n)).join(" · ")||"Col piano orizzontale restano nitidi tutti i punti."}</p><button class="btn" type="button" id="tlUseFlat">Usa In piano</button></div>`;}
+    }
+    const reds=rows.filter(r=>r.lv==="r");
+    if(reds.length){
+      const AJ=Math.abs(pl.J), Jq=Math.max(...reds.map(r=>r.Jreq)), alza=Math.ceil((Jq*1.05-AJ)*20)/20, alt=[];
+      alt.push(`<li><b>${pl.J>=0?"Alza":"Abbassa"} l'obiettivo di ${fmt(alza*100,0)} cm</b>, poi rimisura.</li>`);
+      if(reds.every(r=>r.near)){const arr=Math.max(...reds.map(r=>Math.abs(r.dev)*h/AJ-r.x)); alt.push(`<li><b>Arretra di circa ${fmt(Math.ceil(arr*10)/10,1)} m</b>, poi rimisura.</li>`);}
+      const fs=F.filter(f=>f<st.f).sort((a,b)=>b-a).find(f=>tiltOf(pl,f)!==null&&evalAll(pl,t.terr,f).every(r=>r.lv!=="r"));
+      if(fs){const ag=evalAll(pl,t.terr,fs).every(r=>r.lv==="g"); alt.push(`<li><b>Usa il ${fs}</b>: entra tutto${ag?"":", al limite"}, con tilt ${sg(tiltOf(pl,fs))}. L'inquadratura si allarga.</li>`);}
+      const Nq=upN(Math.max(...reds.map(r=>r.Nreq)));
+      alt.push(Nq?`<li><b>Chiudi a ${fN(Nq)}</b>${Nq>22?" (oltre f/22, che di solito eviti)":""}.<button class="btn" type="button" data-usen="${Nq}">Usa ${fN(Nq)}</button></li>`:`<li>Chiudere non basta: nemmeno f/64.</li>`);
+      if(ni.u>0&&ni.u<ni.nearU){const a=Math.max(0.1,Math.ceil((ni.nearSafe*1.03-ni.u)*10)/10); alt.push(`<li><b>Niente tilt:</b> arretra di ${fmt(a,a<1?2:1)} m e rimetti lo sgabello a ${dist(ni.safe)}, come nella pagina Iperfocale.<button class="btn" type="button" data-go="1">Vai all'Iperfocale</button></li>`);}
+      else alt.push(`<li><b>Niente tilt:</b> torna all'Iperfocale e arretra finché il punto più vicino supera il limite vicino.<button class="btn" type="button" data-go="1">Vai all'Iperfocale</button></li>`);
+      o+=`<div class="vd o"><div class="t">Per far entrare i punti rossi</div><ol class="steps">${alt.join("")}</ol></div>`;
+    }else if(rows.length){
+      const Nm=upN(Math.max(...rows.map(r=>r.Nreq),2.8));
+      if(Nm&&Nm<st.n-0.01) o+=`<div class="vd g"><div class="t">Col tilt ti basta ${fN(Nm)}.</div><p>Invece di ${fN(st.n)}: tempi più brevi e meno diffrazione.</p><button class="btn" type="button" data-usen="${Nm}">Usa ${fN(Nm)}</button></div>`;
+    }
+    $("tlRes").innerHTML=o;
+    const names=rows.map(r=>r.n).join(", ");
+    const foc=pl.J<0?"Con la manopola del fuoco metti a fuoco su un punto lontano del piano sopra di te."
+      :t.terr==="piano"?"Appoggia lo sgabello a terra il più lontano possibile, dove il terreno è ancora nell'inquadratura, e con la manopola del fuoco metti a fuoco sulla sua <b>base</b>, non sulla cima. Vale se lì il terreno è allo stesso livello del piede dell'oggetto vicino; altrimenti metti a fuoco sul <b>piede</b> (Punto 1)."
+      :`Con la manopola del fuoco metti a fuoco sul <b>Punto 3</b> (${esc(t.p3.n||"terreno lontano")}): sta sul piano di fuoco ed è lontano, quindi più preciso.`;
+    $("tlSteps").innerHTML=`<li>Tutti i movimenti a zero, macchina in bolla.</li><li>Inclina lo standard anteriore di <b>${sg(tl)}</b>: bordo superiore ${tl>=0?"in avanti":"indietro"}.</li><li><b>Verifica col Bosch</b>, misura dell'inclinazione: fianco sinistro contro il telaio dello standard. Leggi il valore a standard dritto, poi inclina finché cambia di ${fmt(Math.abs(tl),1)}°.</li><li>${foc}</li><li>Col lentino controlla: ${esc(names)||"l'oggetto vicino"}. Se è morbido correggi solo il tilt, poco, e rifai il fuoco sul lontano con la manopola.</li><li>Chiudi a ${fN(st.n)} e scatta.</li>`;
+    $("tlBanco").hidden=false;
+  }
+  let rstT=0;
+  document.addEventListener("input",e=>{const x=e.target; if(!x||!x.dataset||!x.dataset.tid) return;
+    const id=x.dataset.tid, ob=obj(id); if(!ob) return;
+    ob[x.dataset.tk]=x.value; save();
+    if(x.dataset.tk==="n"&&/^(near|far)-/.test(id)){const el=$("tlttl-"+id); if(el) el.textContent=x.value.trim()||(id.startsWith("near")?"Punto vicino":"Punto lontano");}
+    compute();});
+  document.addEventListener("click",e=>{const b=e.target.closest("button"); if(!b) return; const t=TS();
+    if(b.dataset.tterr){t.terr=b.dataset.tterr;save();build();compute();}
+    else if(b.dataset.ttog){const ob=obj(b.dataset.ttog); if(ob){ob.up=b.dataset.up==="1";save();build();compute();}}
+    else if(b.dataset.tdel){const [k,i]=b.dataset.tdel.split("-");t[k].splice(+i,1);save();build();compute();}
+    else if(b.id==="tlAddNear"){t.near.push(P0());save();build();compute();}
+    else if(b.id==="tlAddFar"){t.far.push({n:"",a:"",up:true});save();build();compute();}
+    else if(b.id==="tlUseFlat"){t.terr="piano";save();build();compute();$("tlRes").scrollIntoView({behavior:"smooth"});}
+    else if(b.id==="tlReset"){
+      if(Date.now()-rstT>3000){rstT=Date.now();b.textContent="Tocca di nuovo per azzerare";setTimeout(()=>{if(Date.now()-rstT>=2900)b.textContent="Azzera le misure";},3000);return;}
+      rstT=0;b.textContent="Azzera le misure";st.tl={};save();build();compute();window.scrollTo(0,0);}
+  });
+  return {render(){TS(); if(!$("pg3").contains(document.activeElement)) build(); compute();}};
+})();
+function render(){
+  document.documentElement.dataset.theme=st.theme;
+  $("theme").textContent=st.theme==="dark"?"Chiaro":"Scuro";
+  chips($("fChips"),F,st.f,v=>v,v=>st.f=v);
+  N=st.whole?NW:NT;
+  if(!N.includes(st.n)) st.n=up(st.n)||64;
+  chips($("wChips"),[{v:true,t:"Interi"},{v:false,t:"Terzi di stop"}],st.whole,null,v=>st.whole=v);
+  chips($("nChips"),N,st.n,v=>String(v).replace(".",","),v=>{st.n=v;st.nFrom="";});
+  chips($("cChips"),C,st.c,null,v=>st.c=v);
+  const h=H(st.f,st.n,st.c);
+  $("H").innerHTML=fmt(h,h<10?2:1)+"<small>m</small>";
+  $("Hsub").textContent="Fuoco a "+dist(h)+": nitido da "+dist(h/2)+" all'infinito.";
+  { const s0=safeS(h), n0=h*s0/(h+s0);
+    $("Htrick").innerHTML=`<div class="safe"><span class="lab">In sicurezza</span><dl><dt>Sgabello a</dt><dd>${fmt(s0,1)} m</dd><dt>Punto più vicino oltre</dt><dd>${fmt(n0,2)} m</dd></dl><div class="note" style="margin-top:6px">Sgabello all'iperfocale + 5%: nitido da ${fmt(n0,2)} m all'infinito, con margine.</div></div>`;
+    $("sHint").innerHTML=`Croce sulla base dello sgabello, col GLM inclinato in basso. Sposta lo sgabello finché il numero grande è <b>${fmt(s0,1)} m</b>.`;
+    $("s").placeholder="es. "+fmt(s0,1); }
+  $("diff").innerHTML=st.n>=64?'<span class="warn">A f/64 la diffrazione si vede: usalo solo se serve davvero la profondità.</span>':st.n>=45?'<span class="warn">Da f/45 si perde un po\' di nitidezza negli ingrandimenti grandi.</span>':"";
+  if(document.activeElement!==$("s"))$("s").value=st.s;
+  const sv=num(st.s);
+  if(sv>0){
+    const near=h*sv/(h+sv), far=sv>=h?Infinity:h*sv/(h-sv);
+    $("sDl").hidden=false;
+    $("sDl").innerHTML=`<dt>Nitido da</dt><dd>${dist(near)}</dd><dt>a</dt><dd>${far===Infinity?"infinito":dist(far)}</dd>`;
+    const safe=safeS(h), state=far!==Infinity?"r":sv<safe?"y":"g";
+    const col={r:"var(--warn)",y:"var(--mid)",g:"var(--ok)"}[state];
+    const txt={r:"Infinito non compreso.",y:"Infinito compreso, ma al limite.",g:"Infinito compreso, con margine."}[state];
+    let o=sgGraph(sv,h,col)+`<div class="sgMsg" style="color:${col}">${txt}</div>`;
+    if(state!=="g") o+=`<div class="sgSug">Metti lo sgabello a <b>${fmt(safe,1)} m</b>: a fuoco da <b>${fmt(h*safe/(h+safe),2)} m</b> all'infinito.${sgGraph(safe,h,"var(--ok)")}</div>`;
+    $("sNote").innerHTML=o;
+  }else{$("sDl").hidden=true;$("sNote").textContent="";}
+  // oggetto più vicino
+  chips($("vChips"),[{v:false,t:"No"},{v:true,t:"Sì"}],st.v,null,v=>st.v=v);
+  $("vBox").hidden=!st.v;
+  const KT={t:"Terreno",s:"Muro a sinistra",d:"Muro a destra",ts:"Terreno + muro a sinistra",td:"Terreno + muro a destra"};
+  chips($("kChips"),Object.keys(KT).map(k=>({v:k,t:KT[k]})),st.k||"t",null,v=>st.k=v);
+  const kk=st.k||"t", hasT=kk.includes("t"), hasM=kk!=="t", side=kk.includes("s")?"sinistro":"destro";
+  $("rowT").hidden=!hasT; $("rowM").hidden=!hasM;
+  $("umLab").textContent=`Muro a ${side==="sinistro"?"sinistra":"destra"}: punto più vicino che entra nell'inquadratura · lunghezza indiretta · numero grande (m)`;
+  for(const k of ["u","um"]) if(document.activeElement!==$(k))$(k).value=st[k]||"";
+  const dT=num(st.u), dM=num(st.um);
+  let out="";
+  if(st.v && (!hasT||dT>0) && (!hasM||dM>0)){
+    const safe=safeS(h), sv2=num(st.s), sUse=sv2>0?sv2:safe, nearU=h*sUse/(h+sUse), nearSafe=h*safe/(h+safe);
+    const tClose=hasT&&dT<nearU, mClose=hasM&&dM<nearU;
+    const head=`<p>Con ${fN(st.n)} e lo sgabello a ${dist(sUse)}${sv2>0?"":" (posizione sicura)"} il nitido parte da <b>${dist(nearU)}</b>.</p>`;
+    if(!tClose&&!mClose){
+      out=`<div class="vd g"><div class="t">A fuoco senza tilt né swing.</div>${head}</div>`;
+    }else{
+      const dmin=Math.min(tClose?dT:Infinity, mClose?dM:Infinity);
+      const arr=Math.max(0.1,Math.ceil((nearSafe*1.03-dmin)*10)/10);
+      const pgN=tClose&&mClose?5:tClose?3:4, mv={3:"il tilt",4:"lo swing",5:"tilt + swing"}[pgN], pgName={3:"Tilt",4:"Swing",5:"Tilt + Swing"}[pgN];
+      const who=tClose&&mClose?"Terreno e muro sono troppo vicini":tClose?"Il terreno è troppo vicino":"Il muro è troppo vicino";
+      out=`<div class="vd y"><div class="t">Senza movimenti: arretra.</div>${head}<p>${who}. Arretra la macchina di almeno <b>${fmt(arr,arr<1?2:1)} m</b> e metti lo sgabello a <b>${dist(safe)}</b> dalla nuova posizione.</p><p class="note">Ricontrolla l'inquadratura sul vetro.</p></div>`
+        +`<div class="vd o"><div class="t">Se non puoi arretrare: serve ${mv}.</div><p><button type="button" class="go" data-go="${pgN}">Vai a ${pgName}</button></p></div>`;
+    }
+  }
+  $("verd").innerHTML=out;
+  // pagine
+  $("pg1").hidden=st.pg!==1; $("pg3").hidden=st.pg!==3; $("pg4").hidden=st.pg!==4; $("pg5").hidden=st.pg!==5; $("pg6").hidden=st.pg!==6; $("pg7").hidden=st.pg!==7; $("pg8").hidden=st.pg!==8; if(st.pg===6) fotoRender(); rRender(); kRender();
+  document.querySelectorAll("#tabs button[data-p]").forEach(b=>b.setAttribute("aria-selected",String(+b.dataset.p===st.pg)));
+  $("mvWarn").innerHTML=st.nFrom?`<div class="vd y"><div class="t">${fN(st.n)} scelto per ${st.nFrom}.</div><p>Questa pagina vale solo senza movimenti.</p>${st.nPrev?`<p><button type="button" class="btn" id="mvBack">Torna a ${fN(st.nPrev)}</button></p>`:""}</div>`:"";
+  const mb=$("mvBack"); if(mb) mb.onclick=()=>{st.n=st.nPrev;st.nFrom="";save();render();};
+  // Sinar
+  chips($("sinChips"),[{v:false,t:"No"},{v:true,t:"Sì"}],!!st.sin,null,v=>st.sin=v);
+  $("sinBox").hidden=!st.sin;
+  for(const k of ["r1","r2","ns"]) if(document.activeElement!==$(k))$(k).value=st[k];
+  const cm=v=>{const x=num(v);return isFinite(x)?(x>10?x/10:x):NaN;};
+  const r1=cm(st.r1), r2=cm(st.r2), nsv=num(st.ns);
+  const haveR=isFinite(r1)&&isFinite(r2)&&r1!==r2, haveM=nsv>0;
+  let so="", coh="";
+  if(st.sin&&(haveR||haveM)){
+    let d=haveR?Math.abs(r2-r1)*10:NaN;
+    const uu0=st.v?Math.min(hasT&&dT>0?dT:Infinity,hasM&&dM>0?dM:Infinity):NaN; let fixInf=false, midShow=haveR?(r1+r2)/2:NaN;
+    if(haveR&&isFinite(uu0)&&uu0>0){
+      const f0=st.f, vN0=f0*uu0*1000/(uu0*1000-f0), dE0=vN0-f0, vF0=vN0-d;
+      if(vF0>f0+0.3){ fixInf=true; const sg=r2>r1?1:-1; midShow=(r2+(r2-sg*dE0/10))/2; d=dE0; }
+    }
+    const dRead=haveR?Math.abs(r2-r1)*10:NaN;
+    const nR=haveR?up(d/(2*st.c)):null;
+    const stops=st.c===0.1?1:2;
+    const nM=haveM?up(nsv*Math.pow(2,stops/2)*0.985):null;
+    const cand=[nR,nM].filter(x=>x!=null);
+    const over=cand.some(x=>x===undefined);
+    const nReq=over?undefined:Math.max(...cand);
+    let lines="";
+    if(haveR) lines+=`<dt>Differenza letta</dt><dd>${fmt(dRead,1)} tacche</dd><dt>${fixInf?"Fino all'infinito serve":"Dalle letture"}</dt><dd>${nR?fN(nR):"oltre f/64"}</dd>`;
+    if(haveM) lines+=`<dt>Manopola corretta per il 4x5</dt><dd>${nM?fN(nM):"oltre f/64"}</dd>`;
+    so+=`<div class="result"><dl style="margin-top:0">${lines}</dl>`;
+    if(haveR) so+=`<div class="sub">${fixInf?"Per avere anche l'infinito":"Fuoco a metà"}: porta il puntino su <b>${fmt(midShow,2)}</b> sulla scala.</div>`;
+    if(haveR&&haveM&&nR&&nM&&Math.abs(2*Math.log2(nM/nR))>1.1) so+=`<div class="note warn">Letture e manopola non concordano: rileggi.</div>`;
+    so+=`</div>`;
+    // segnale unico di coerenza, in fondo alla pagina
+    let imp=false;
+    if(haveR&&isFinite(uu0)&&uu0>0){const f=st.f, vN=f*uu0*1000/(uu0*1000-f); if(vN-dRead<f-0.3) imp=true;}
+    if(imp){
+      coh=`<div class="vd o"><div class="t">Lettura impossibile: rileggi.</div><p>Con il primo piano a ${dist(uu0)} e il ${st.f} mm, fino all'infinito ci sono al massimo ${fmt(f0exp(st.f,uu0),1)} tacche: ne hai lette ${fmt(dRead,1)}.</p></div>`;
+    }else if(nReq===undefined){
+      coh=`<div class="vd o"><div class="t">Sinar e iperfocale: non basta nemmeno f/64.</div><p>Serve il movimento: torna su, a "Oggetto più vicino".</p></div>`;
+    }else if(st.n>=nReq-0.01){
+      coh=`<div class="vd g"><div class="t">Sinar e iperfocale coerenti.</div><p>Il Sinar chiede ${fN(nReq)}, hai impostato ${fN(st.n)}${fixInf?", infinito compreso":""}.</p></div>`;
+    }else{
+      coh=`<div class="vd o"><div class="t">Non coerenti: chiudi a ${fN(nReq)}.</div><p>${fixInf?"Per avere anche l'infinito il Sinar chiede":"Il Sinar chiede"} ${fN(nReq)}, hai impostato ${fN(st.n)}: troppo aperto.</p><button class="btn" type="button" id="useN" data-n="${nReq}">Usa ${fN(nReq)} e ricalcola</button></div>`;
+    }
+  }
+  $("sinOut").innerHTML=so; $("cohOut").innerHTML=coh;
+  // TILT col Bosch
+  TL.render();
+  // SWING
+  {
+    const f=st.f/1000;
+    if(!st.wl) st.wl=(st.k||"").includes("d")?"d":"s";
+    if(!st.wt) st.wt="p";
+    chips($("wlChips"),[{v:"s",t:"Sinistro"},{v:"d",t:"Destro"}],st.wl,null,v=>st.wl=v);
+    chips($("wtChips"),[{v:"p",t:"Parallelo"},{v:"o",t:"Si avvicina o si allontana"},{v:"i",t:"Non è verticale"}],st.wt,null,v=>st.wt=v);
+    chips($("oChips"),[{v:"h",t:"Orizzontale"},{v:"v",t:"Verticale"}],st.or,null,v=>st.or=v);
+    chips($("wbChips"),[{v:false,t:"No"},{v:true,t:"Sì"}],!!st.wb,null,v=>st.wb=v);
+    const side=st.wl==="s"?-1:1, sideN=st.wl==="s"?"sinistro":"destro", sideA=st.wl==="s"?"sinistra":"destra", oppA=st.wl==="s"?"destra":"sinistra";
+    $("wEdgeLab").textContent=`Al bordo ${sideN} dell'inquadratura (m)`;
+    $("rowWJ").hidden=st.wt!=="p"; $("wOblCard").hidden=st.wt!=="o";
+    const dW=num(st.um), u0w=dW>0?dW:NaN;
+    $("wSum").innerHTML=`<p style="margin:4px 0 0">${st.f} mm, ${fN(st.n)}, criterio ${st.c===0.1?"normale":"super preciso"}. Muro: punto più vicino a ${isFinite(u0w)?dist(u0w):"?"}.</p>`;
+    for(const k of ["wJ","wNp","sL","sC","sDo","sP"]) if(document.activeElement!==$(k))$(k).value=st[k]||"";
+    const half=(st.or==="v"?48:60)/1000, th=Math.atan(half/f);
+    let out="", ver="", steps="", J=NaN, wallAng=0, kind="";
+    if(st.wt==="i"){
+      out=`<div class="vd o"><div class="t">Il muro non è verticale: serve Tilt + Swing.</div><p><button type="button" class="go" data-go="5">Vai a Tilt + Swing</button></p></div>`;
+    }else if(st.wt==="p"){
+      J=num(st.wJ); kind="Muro parallelo alla rotaia";
+      if(!(J>0)) out=`<div class="vd"><p style="margin:0">Scrivi la distanza del muro di lato.</p></div>`;
+    }else{
+      const E=num(st.sL), C=num(st.sC);
+      if(E>0&&C>0){
+        const A=[side*E*Math.sin(th),E*Math.cos(th)], B=[0,C];
+        const dx=B[0]-A[0], dy=B[1]-A[1];
+        if(Math.abs(dx)<1e-6){ out=`<div class="vd o"><p style="margin:0">Misure non valide: rileggi.</p></div>`; }
+        else{
+          const m=dy/dx; // y = C + m*x
+          if(Math.abs(m)<0.02) out=`<div class="vd g"><div class="t">Il muro è di fronte a te: lo swing non serve.</div><p>Usa l'iperfocale della pagina 1.</p></div>`;
+          else{ const x0=-C/m; if(Math.sign(x0)!==side) out=`<div class="vd o"><div class="t">Misure incoerenti.</div><p>Con queste distanze il muro starebbe dall'altro lato: controlla il lato scelto e rimisura.</p></div>`;
+            else{ J=Math.abs(x0); wallAng=Math.atan(1/Math.abs(m)); kind=Math.atan(Math.abs(1/m))>0? (E*Math.cos(th)<C?"Muro che si allontana verso il centro":"Muro che si avvicina") : ""; } }
+        }
+      }else out=`<div class="vd"><p style="margin:0">Scrivi le due distanze, al bordo e al centro.</p></div>`;
+    }
+    if(isFinite(J)&&!out){
+      if(J<=f*1.2) out=`<div class="vd o"><div class="t">Swing impossibile.</div><p>Sei quasi sulla linea del muro: spostati di lato.</p></div>`;
+      else{
+        const al=Math.asin(f/J)*180/Math.PI;
+        out=`<div class="result"><span class="lab">Swing dello standard anteriore</span><div class="big">${fmt(al,1)}° a ${sideA}</div>
+          <div class="sub">Lo standard guarda il muro: bordo ${sideN==="sinistro"?"destro":"sinistro"} <b>in avanti</b>, bordo ${sideN} <b>indietro</b>.</div>
+          <dl><dt>${st.wt==="p"?"Muro parallelo alla rotaia":"Muro obliquo"}</dt><dd>J = ${dist(J)} a ${sideA}</dd><dt>Cerniera</dt><dd>${dist(J)} a ${sideA} dell'obiettivo</dd></dl></div>`;
+        // verdetto unico
+        const objs=[];
+        const xN=u0w, pN=num(st.wNp);
+        if(xN>0&&pN>0) objs.push({n:"Oggetto vicino",x:xN,y:pN,kind:"o"});
+        const Do=num(st.sDo), pp=num(st.sP);
+        if(Do>0&&pp>0) objs.push({n:"Oggetto lontano",x:Do,y:pp,kind:"o"});
+        // sfondo sul lato opposto: angolo fra il raggio al bordo opposto e il muro
+        let bg=null;
+        if(st.wb){ const ray=[-side*Math.sin(th),Math.cos(th)]; const wd=st.wt==="p"?[0,1]:(()=>{const E=num(st.sL),C=num(st.sC);const A=[side*E*Math.sin(th),E*Math.cos(th)];const d=[0-A[0],C-A[1]];const l=Math.hypot(...d);return [d[0]/l,d[1]/l];})();
+          const g=Math.acos(Math.min(1,Math.abs(ray[0]*wd[0]+ray[1]*wd[1]))); bg={t:Math.tan(g)}; }
+        const cmv=v=>v<1?Math.round(v*100)+" cm":dist(v);
+        const needs=objs.map(o=>st.f*st.f*o.y/(st.c*o.x*1000*J)); if(bg) needs.push(st.f*st.f*bg.t/(st.c*J*1000));
+        objs.forEach(o=>{o.w=o.x*J/h;o.ok=o.y<=o.w+1e-9;}); if(bg) bg.ok=bg.t<=J/h+1e-9;
+        if(objs.length||bg){
+          const all=[...objs.map(o=>({...o,lab:`${o.n}: a ${dist(o.x)} il cuneo è spesso ${cmv(o.w)} per lato, ${o.n==="Oggetto vicino"?"sporge":"si stacca"} ${cmv(o.y)}.`}))];
+          if(bg) all.push({n:"Sfondo",ok:bg.ok,lab:`Sfondo all'infinito sul lato ${oppA==="destra"?"destro":"sinistro"}: ${bg.ok?"nitido":"fuori dal cuneo"}.`});
+          if(all.every(o=>o.ok)){
+            ver=`<div class="vd g"><div class="t">Tutto dentro il cuneo.</div>${all.map(o=>`<p>${o.lab}</p>`).join("")}</div>`;
+            const nMin=up(Math.max(...needs,11));
+            if(nMin&&nMin<st.n-0.01){ const g=Math.round(2*Math.log2(st.n/nMin)*3)/3, mm=Math.pow(2,g);
+              ver+=`<div class="vd g"><div class="t">Con lo swing ti basta ${fN(nMin)}.</div><p>Invece di ${fN(st.n)}: ${fmt(g,g%1?1:0)} stop in più di luce, tempo ÷ ${fmt(mm,mm%1?1:0)}. Non scendo sotto f/11, per tenere nitidi i rilievi del muro (davanzali, cornici).</p><button class="btn" type="button" data-usenw="${nMin}">Usa ${fN(nMin)}</button></div>`; }
+          }else{
+            const bad=all.filter(o=>!o.ok);
+            const Nmin=up(Math.max(...needs)), stp=Nmin?Math.round(2*Math.log2(Nmin/st.n)*3)/3:0, mult=Math.pow(2,stp);
+            const Jreq=Math.max(...objs.map(o=>o.y*h/o.x),bg?h*bg.t:0), newJ=Math.ceil(Jreq*1.05*10)/10, piu=newJ-J;
+            const objsBad=objs.filter(o=>!o.ok);
+            const arrT=objsBad.length?Math.ceil(Math.max(...objsBad.map(o=>o.y*h/J*1.05-o.x))*10-1e-6)/10:NaN;
+            const sf=safeS(h), nearSafe=h*sf/(h+sf), arrI=isFinite(u0w)?Math.max(0.1,Math.ceil((nearSafe*1.03-u0w)*10-1e-6)/10):NaN;
+            const row=(ok,n,t,d,btn)=>`<div class="sol${ok?"":" no"}"><div class="sn">${n}</div><div><div class="st">${t}</div><div class="sd">${d}</div>${ok&&btn?btn:""}</div></div>`;
+            ver=`<div class="vd o"><div class="t">${bad.length>1?"Non entra tutto nel cuneo.":bad[0].n+(bad[0].n==="Sfondo"?": fuori dal cuneo.":" esce dal cuneo.")}</div>${bad.map(o=>`<p>${o.lab}</p>`).join("")}<p>Scegli una soluzione:</p>`;
+            ver+=row(!!Nmin,1,Nmin?`Chiudi a ${fN(Nmin)}`:"Chiudere il diaframma",Nmin?`${fmt(stp,stp%1?1:0)} stop: tempo × ${fmt(mult,mult%1?1:0)}. Rileggi il tempo col Sekonic.${Nmin>=45?` A ${fN(Nmin)} la diffrazione si vede negli ingrandimenti grandi.`:""}`:"Non basta nemmeno f/64.",`<button class="btn" type="button" data-usenw="${Nmin}">Usa ${fN(Nmin)}</button>`);
+            const useI=isFinite(arrI)&&(!(arrT>0)||arrI<arrT||bad.some(o=>o.n==="Sfondo"));
+            if(useI) ver+=row(true,2,`Arretra di ${fmt(arrI,1)} m e togli lo swing`,`Così basta l'iperfocale: sgabello a ${dist(sf)}, nitido da ${dist(nearSafe)} all'infinito, a ${fN(st.n)}. Ricontrolla l'inquadratura sul vetro.`,`<button class="btn" type="button" data-go="1">Vai all'Iperfocale</button>`);
+            else if(arrT>0) ver+=row(true,2,`Arretra di ${fmt(arrT,1)} m`,`${objsBad.map(o=>`${o.n} a ${dist(o.x+arrT)}`).join(", ")}: il cuneo si allarga con la distanza. Poi rimisura il muro. Ricontrolla l'inquadratura sul vetro.`);
+            else ver+=row(false,2,"Arretrare","Senza la distanza del muro in pagina 1 non so calcolarlo.");
+            ver+=row(piu<=2,3,piu<=2?`Allontanati dal muro di ${Math.round(piu*100)} cm`:"Allontanarti dal muro",piu<=2?`Cerniera a ${dist(newJ)} di lato. Poi rimisura e rifai lo swing: cambia anche l'angolo.`:`Servirebbero ${fmt(piu,1)} m in più di lato: troppo.`);
+            ver+=`</div>`;
+          }
+        }
+        steps=`<li>Tutti i movimenti a zero, macchina in bolla.</li><li>Ruota lo standard anteriore di <b>${fmt(al,1)}° verso ${sideA}</b>: bordo ${sideN==="sinistro"?"destro":"sinistro"} in avanti.</li><li>Con la manopola del fuoco metti a fuoco su un dettaglio del muro <b>lontano</b> (la base, all'altezza dell'obiettivo).</li><li>Col lentino controlla il muro <b>vicino</b>. Se è morbido correggi solo lo swing, poco, e rifai il fuoco sul lontano con la manopola.</li><li>Chiudi a ${fN(st.n)} e scatta.</li>`;
+      }
+    }
+    $("wOut").innerHTML=out; $("wVerd").innerHTML=ver; $("wSteps").innerHTML=steps; $("wSteps").parentElement.hidden=!steps;
+  }
+  // TILT + SWING
+  {
+    const f=st.f/1000;
+    if(!st.qk) st.qk="p"; if(!st.qs) st.qs=(st.k||"").includes("d")?"d":"s"; if(!st.qp) st.qp="c";
+    chips($("qkChips"),[{v:"p",t:"Un piano inclinato in due direzioni"},{v:"tm",t:"Terreno + muro"}],st.qk,null,v=>st.qk=v);
+    chips($("qsChips"),[{v:"s",t:"Sinistro"},{v:"d",t:"Destro"}],st.qs,null,v=>st.qs=v);
+    chips($("qpChips"),[{v:"t",t:"Priorità al terreno"},{v:"m",t:"Priorità al muro"},{v:"c",t:"Compromesso"}],st.qp,null,v=>st.qp=v);
+    chips($("qoChips"),[{v:"h",t:"Orizzontale"},{v:"v",t:"Verticale"}],st.or,null,v=>st.or=v);
+    const tm=st.qk==="tm", comp=tm&&st.qp==="c";
+    $("qkNote").textContent=tm?"Per esempio una strada con le case a lato, un sentiero lungo un muro.":"Un versante visto di traverso, una strada in pendio in diagonale, un muro a scarpa, un argine, un tetto di sbieco, una riva che scende verso l'acqua.";
+    $("qSideRow").hidden=!tm; $("qPrRow").hidden=!tm; $("q3Card").hidden=tm; $("qBCard").hidden=!comp; $("qObjCard").hidden=tm&&!comp; $("qObjP").hidden=tm; $("qObjB").hidden=!tm;
+    const sideS=st.qs==="s"?-1:1;
+    $("qSum").innerHTML=`<p style="margin:4px 0 0">${st.f} mm, ${fN(st.n)}, criterio ${st.c===0.1?"normale":"super preciso"}.</p>`;
+    const ks=["qLd","qLa","qCd","qCa","qRd","qRa"], kb=["qJg","qJw"];
+    for(const k of [...ks,...kb,"q1d","q1p","q2d","q2p","qMh","qTw"]) if(document.activeElement!==$(k))$(k).value=st[k]||"";
+    const half=(st.or==="v"?48:60)/1000, th=Math.atan(half/f);
+    const pt=(d,a,ps)=>{const ar=a*Math.PI/180, dh=d*Math.cos(ar); return [dh*Math.sin(ps), -d*Math.sin(ar), dh*Math.cos(ps)];};
+    const sub=(p,q)=>[p[0]-q[0],p[1]-q[1],p[2]-q[2]], cr=(p,q)=>[p[1]*q[2]-p[2]*q[1],p[2]*q[0]-p[0]*q[2],p[0]*q[1]-p[1]*q[0]], dot=(p,q)=>p[0]*q[0]+p[1]*q[1]+p[2]*q[2], nrm=p=>{const l=Math.hypot(...p);return p.map(x=>x/l);};
+    let out="", ver="", steps="", n=null, P0=null, objs=[];
+    if(tm&&st.qp!=="c"){
+      const go=st.qp==="t"?3:4;
+      out=`<div class="vd g"><div class="t">${st.qp==="t"?"Priorità al terreno: usa il Tilt.":"Priorità al muro: usa lo Swing."}</div><p>${st.qp==="t"?"Il muro entra solo per quanto il cuneo lo copre: scrivi la sua altezza come oggetto alto.":"Il terreno entra solo per quanto il cuneo lo copre: scrivi come oggetto vicino quanto sporge dal muro."}</p><p><button type="button" class="go" data-go="${go}">Vai a ${st.qp==="t"?"Tilt":"Swing"}</button></p></div>`;
+    }else if(!tm){
+      const V=ks.map(k=>num(st[k]));
+      if(V.every(x=>isFinite(x))&&V[0]>0&&V[2]>0&&V[4]>0){
+        const P=[pt(V[0],V[1],-th),pt(V[2],V[3],0),pt(V[4],V[5],th)];
+        const c=cr(sub(P[1],P[0]),sub(P[2],P[0]));
+        if(Math.hypot(...c)<1e-3) out=`<div class="vd o"><div class="t">I tre punti sono allineati.</div><p>Scegli punti che non stiano sulla stessa linea.</p></div>`;
+        else{ n=nrm(c); P0=P[1]; }
+        for(const [dk,pk,nm] of [["q1d","q1p","Oggetto vicino"],["q2d","q2p","Oggetto lontano"]]){ const Do=num(st[dk]), pp=num(st[pk]); if(Do>0&&pp>0) objs.push({n:nm,x:Do,y:pp,v:"sporge"}); }
+      }else out=`<div class="vd"><p style="margin:0">Scrivi distanza e angolo dei tre punti.</p></div>`;
+    }else{
+      const Jg=num(st.qJg), Jw=num(st.qJw);
+      if(Jg>0&&Jw>0){
+        n=nrm([-sideS,1,0]); P0=[sideS*Jw,-Jg,0];
+        const xA=Jw/Math.tan(th);
+        const Mh=num(st.qMh), Tw=num(st.qTw);
+        if(Mh>0) objs.push({n:"Muro",x:xA,y:Mh*Math.SQRT1_2,raw:Mh,v:"alto"});
+        if(Tw>0) objs.push({n:"Terreno",x:xA,y:Tw*Math.SQRT1_2,raw:Tw,v:"largo"});
+      }else out=`<div class="vd"><p style="margin:0">Scrivi l'altezza dell'obiettivo e la distanza del muro.</p></div>`;
+    }
+    if(n&&!out){
+      const d0=dot(n,P0), nxy=Math.hypot(n[0],n[1]);
+      if(nxy<1e-6) out=`<div class="vd g"><div class="t">Il piano è di fronte a te: non servono movimenti.</div><p><button type="button" class="go" data-go="1">Vai all'Iperfocale</button></p></div>`;
+      else{
+        const J=Math.abs(d0)/nxy, sg=Math.sign(d0)||1, u=[sg*n[0]/nxy, sg*n[1]/nxy];
+        if(J<=f*1.2) out=`<div class="vd o"><div class="t">Movimenti impossibili.</div><p>Il piano passa quasi per l'obiettivo: sposta la macchina.</p></div>`;
+        else{
+          const al=Math.asin(f/J)*180/Math.PI, tilt=al*(-u[1]), sw=al*u[0];
+          const tTxt=`${tilt>=0?"+":"−"}${fmt(Math.abs(tilt),1)}° ${tilt>=0?"avanti":"indietro"}`, sTxt=Math.abs(sw)<0.05?"0°":`${fmt(Math.abs(sw),1)}° a ${sw<0?"sinistra":"destra"}`;
+          const hingeTxt=`${u[1]<-0.3?"sotto":u[1]>0.3?"sopra":""}${Math.abs(u[0])>0.1?(Math.abs(u[1])>0.3?" e ":"")+(Math.abs(u[0])<0.3?"un po' ":"")+(u[0]>0?"a destra":"a sinistra"):""}`;
+          out=`<div class="result"><span class="lab">Standard anteriore</span>
+            <div class="big" style="font-size:34px">Tilt ${tTxt}</div>
+            <div class="big" style="font-size:34px">Swing ${sTxt}</div>
+            <div class="sub">Tilt: bordo superiore ${tilt>=0?"verso la scena":"verso di te"}. Swing: lo standard guarda ${sw<0?"a sinistra (bordo destro in avanti)":"a destra (bordo sinistro in avanti)"}.</div>
+            <dl><dt>Rotazione totale</dt><dd>${fmt(al,1)}°</dd><dt>Cerniera</dt><dd>${dist(J)} dall'obiettivo, ${hingeTxt}</dd></dl></div>`;
+          if(!tm&&Math.abs(sw)<0.3) out+=`<div class="vd g"><div class="t">Lo swing è quasi zero: basta il tilt.</div><p><button type="button" class="go" data-go="3">Vai a Tilt</button></p></div>`;
+          else if(!tm&&Math.abs(tilt)<0.3) out+=`<div class="vd g"><div class="t">Il tilt è quasi zero: basta lo swing.</div><p><button type="button" class="go" data-go="4">Vai a Swing</button></p></div>`;
+          // verdetto unico
+          if(objs.length){
+            const cmv=v=>v<1?Math.round(v*100)+" cm":dist(v);
+            objs.forEach(o=>{o.w=o.x*J/h; o.ok=o.y<=o.w+1e-9; o.lab=o.raw?`${o.n}: a ${dist(o.x)} il cuneo copre ${cmv(o.w/Math.SQRT1_2)} di ${o.v==="alto"?"altezza":"larghezza"}, ne servono ${cmv(o.raw)}.`:`${o.n}: a ${dist(o.x)} il cuneo arriva a ${cmv(o.w)} dal piano, sporge ${cmv(o.y)}.`;});
+            const needs=objs.map(o=>st.f*st.f*o.y/(st.c*o.x*1000*J));
+            if(objs.every(o=>o.ok)){
+              ver=`<div class="vd g"><div class="t">Tutto dentro il cuneo.</div>${objs.map(o=>`<p>${o.lab}</p>`).join("")}</div>`;
+              const nMin=up(Math.max(...needs,2.8));
+              if(nMin&&nMin<st.n-0.01){ const g=Math.round(2*Math.log2(st.n/nMin)*3)/3, mm=Math.pow(2,g);
+                ver+=`<div class="vd g"><div class="t">Con tilt e swing ti basta ${fN(nMin)}.</div><p>Invece di ${fN(st.n)}: ${fmt(g,g%1?1:0)} stop in più di luce, tempo ÷ ${fmt(mm,mm%1?1:0)}.</p><button class="btn" type="button" data-usenq="${nMin}">Usa ${fN(nMin)}</button></div>`; }
+            }else{
+              const bad=objs.filter(o=>!o.ok);
+              const Nmin=up(Math.max(...needs)), stp=Nmin?Math.round(2*Math.log2(Nmin/st.n)*3)/3:0, mult=Math.pow(2,stp);
+              const arrT=Math.ceil(Math.max(...bad.map(o=>o.y*h/J*1.05-o.x))*10-1e-6)/10;
+              const sf=safeS(h), nearSafe=h*sf/(h+sf);
+              const near0=Math.min(...[num(st.u),num(st.um)].filter(x=>x>0));
+              const arrI=isFinite(near0)?Math.max(0.1,Math.ceil((nearSafe*1.03-near0)*10-1e-6)/10):NaN;
+              const newJ=Math.ceil(Math.max(...objs.map(o=>o.y*h/o.x))*1.05*10)/10, piu=newJ-J;
+              const up_=-u[1]*piu, lat=-u[0]*piu, mv=[];
+              if(Math.abs(up_)>=0.05) mv.push(`${up_>0?"alza":"abbassa"} di ${Math.round(Math.abs(up_)*100)} cm`);
+              if(Math.abs(lat)>=0.05) mv.push(`spostati a ${lat>0?"destra":"sinistra"} di ${Math.round(Math.abs(lat)*100)} cm`);
+              const row=(ok,k,t,d,btn)=>`<div class="sol${ok?"":" no"}"><div class="sn">${k}</div><div><div class="st">${t}</div><div class="sd">${d}</div>${ok&&btn?btn:""}</div></div>`;
+              ver=`<div class="vd o"><div class="t">${bad.length>1?"Non entra tutto nel cuneo.":bad[0].n+" esce dal cuneo."}</div>${bad.map(o=>`<p>${o.lab}</p>`).join("")}<p>Scegli una soluzione:</p>`;
+              ver+=row(!!Nmin,1,Nmin?`Chiudi a ${fN(Nmin)}`:"Chiudere il diaframma",Nmin?`${fmt(stp,stp%1?1:0)} stop: tempo × ${fmt(mult,mult%1?1:0)}. Rileggi il tempo col Sekonic.${Nmin>=45?` A ${fN(Nmin)} la diffrazione si vede negli ingrandimenti grandi.`:""}`:"Non basta nemmeno f/64.",`<button class="btn" type="button" data-usenq="${Nmin}">Usa ${fN(Nmin)}</button>`);
+              if(isFinite(arrI)&&arrI<arrT) ver+=row(true,2,`Arretra di ${fmt(arrI,1)} m e togli i movimenti`,`Così basta l'iperfocale: sgabello a ${dist(sf)}, nitido da ${dist(nearSafe)} all'infinito, a ${fN(st.n)}. Ricontrolla l'inquadratura sul vetro.`,`<button class="btn" type="button" data-go="1">Vai all'Iperfocale</button>`);
+              else ver+=row(true,2,`Arretra di ${fmt(arrT,1)} m`,`Il cuneo si allarga con la distanza. Poi rimisura i punti e rifai tilt e swing. Ricontrolla l'inquadratura sul vetro.`);
+              ver+=row(piu<=1.5&&mv.length>0,3,piu<=1.5&&mv.length?`Allontanati dal piano: ${mv.join(" e ")}`:"Allontanarti dal piano",piu<=1.5?`Cerniera a ${dist(newJ)}. Poi rimisura i punti e rifai tilt e swing: cambiano gli angoli.`:`Servirebbero ${fmt(piu,1)} m in più: troppo.`);
+              ver+=`</div>`;
+            }
+          }
+          steps=`<li>Tutti i movimenti a zero, macchina in bolla.</li><li>Tilt dello standard anteriore: <b>${tTxt}</b>.</li><li>Swing: <b>${sTxt}</b>.</li><li>Lontano, con la manopola del fuoco: metti a fuoco su ${comp?"la base del muro lontano":"un punto lontano del piano (quello al centro)"}.</li><li>Vicino, col lentino: controlla ${comp?"la base del muro vicino":"i punti ai due bordi"}. Se sono morbidi correggi solo tilt e swing, poco, e rifai il fuoco sul lontano con la manopola.</li><li>Chiudi a ${fN(st.n)} e scatta.</li>`;
+        }
+      }
+    }
+    $("qOut").innerHTML=out; $("qVerd").innerHTML=ver; $("qSteps").innerHTML=steps; $("qSteps").parentElement.hidden=!steps;
+  }
+  const ubt=$("useNt"); if(ubt) ubt.onclick=()=>{setNmv(+ubt.dataset.n,"il tilt");};
+  const ub=$("useN"); if(ub) ub.onclick=()=>{st.n=+ub.dataset.n;save();render();$("wChips").scrollIntoView({block:"center"});};
+}
+document.querySelectorAll("#tabs button[data-p]").forEach(b=>b.onclick=()=>{st.pg=+b.dataset.p;save();render();});
+for(const k of ["r1","r2","ns"]) $(k).addEventListener("input",e=>{st[k]=e.target.value;save();render();});
+for(const k of ["sL","sC","sDo","sP","wJ","wNp"]) $(k).addEventListener("input",e=>{st[k]=e.target.value;save();render();});
+for(const k of ["qLd","qLa","qCd","qCa","qRd","qRa","q1d","q1p","q2d","q2p","qJg","qJw","qMh","qTw"]) $(k).addEventListener("input",e=>{st[k]=e.target.value;save();render();});
+$("s").addEventListener("input",e=>{st.s=e.target.value;save();render();});
+$("u").addEventListener("input",e=>{st.u=e.target.value;save();render();});
+$("um").addEventListener("input",e=>{st.um=e.target.value;save();render();});
+for(const id of ["verd","tlRes","wOut","wVerd","qOut","qVerd"]) $(id).addEventListener("click",e=>{const q=e.target.closest("[data-usenq]");if(q){setNmv(+q.dataset.usenq,"tilt + swing");return;}const w=e.target.closest("[data-usenw]");if(w){setNmv(+w.dataset.usenw,"lo swing");return;}const u=e.target.closest("[data-usen]");if(u){setNmv(+u.dataset.usen,"il tilt");return;}const b=e.target.closest("[data-go]");if(b){st.pg=+b.dataset.go;save();render();window.scrollTo(0,0);}});
+// ===== Pagina Foto =====
+const PF=[13,24,48,120];
+let fImg=null, fExif=null, fMk=[], mkMode="v", mStream=null;
+const MK={v:{t:"Oggetto vicino",c:"#F09A7A",l:"V"},a:{t:"Oggetto alto",c:"#86C79E",l:"A"}};
+function exif35(buf){
+  try{const d=new DataView(buf); if(d.getUint16(0)!==0xFFD8) return null; let o=2;
+    while(o<d.byteLength-4){const m=d.getUint16(o), len=d.getUint16(o+2);
+      if(m===0xFFE1 && d.getUint32(o+4)===0x45786966){const t=o+10, le=d.getUint16(t)===0x4949;
+        const g16=x=>d.getUint16(x,le), g32=x=>d.getUint32(x,le);
+        const ifd=(off,tag)=>{const n=g16(t+off);for(let i=0;i<n;i++){const e=t+off+2+i*12;if(g16(e)===tag)return e;}return null;};
+        const ep=ifd(g32(t+4),0x8769); if(!ep) return null;
+        const fe=ifd(g32(ep+8),0xA405); return fe?g16(fe+8)||null:null;}
+      if((m&0xFF00)!==0xFF00) break; o+=2+len;}
+  }catch(e){} return null;
+}
+function frameOf(W,Hh,lens){ // semi-lati della cornice 4x5 in px
+  const k=Math.hypot(W,Hh)/43.27*st.pf; const fw=st.or==="h"?60:48, fh=st.or==="h"?48:60;
+  return {w:fw/lens*k, h:fh/lens*k};
+}
+function lensPair(){const i=F.indexOf(st.f);return [F[i-1],F[i+1]].filter(Boolean);}
+function drawFrames(ctx,W,Hh,scale){
+  const cx=W/2, cy=Hh/2, lw=Math.max(2,W/320)*scale;
+  for(const L of lensPair()){const r=frameOf(W,Hh,L);ctx.setLineDash([lw*4,lw*3]);ctx.strokeStyle="#E3C04F";ctx.lineWidth=lw;ctx.strokeRect(cx-r.w,cy-r.h,2*r.w,2*r.h);
+    ctx.setLineDash([]);ctx.fillStyle="#E3C04F";ctx.font=`600 ${Math.round(W/40)}px sans-serif`;ctx.fillText(String(L),Math.max(cx-r.w,0)+lw*3,Math.max(cy-r.h,0)+W/34);}
+  const r=frameOf(W,Hh,st.f);ctx.setLineDash([]);ctx.strokeStyle="#9DB4E6";ctx.lineWidth=lw*1.8;ctx.strokeRect(cx-r.w,cy-r.h,2*r.w,2*r.h);
+  ctx.fillStyle="#9DB4E6";ctx.font=`700 ${Math.round(W/32)}px sans-serif`;ctx.fillText(st.f+" mm",Math.max(cx-r.w,0)+lw*3,Math.min(cy+r.h,Hh)-lw*4);
+}
+function drawPhoto(withMk=true){
+  const c=$("fCan"); if(!fImg) return; const W=fImg.width, Hh=fImg.height; c.width=W; c.height=Hh;
+  const x=c.getContext("2d"); x.drawImage(fImg,0,0,W,Hh);
+  x.fillStyle="rgba(0,0,0,.35)"; const r=frameOf(W,Hh,st.f);
+  x.fillRect(0,0,W,Math.max(0,Hh/2-r.h)); x.fillRect(0,Hh/2+r.h,W,Math.max(0,Hh/2-r.h));
+  x.fillRect(0,Math.max(0,Hh/2-r.h),Math.max(0,W/2-r.w),2*r.h); x.fillRect(W/2+r.w,Math.max(0,Hh/2-r.h),Math.max(0,W/2-r.w),2*r.h);
+  drawFrames(x,W,Hh,1);
+  if(withMk) for(const m of fMk){const R=W/30, X=m.x*W, Y=m.y*Hh;
+    x.beginPath();x.arc(X,Y,R,0,7);x.fillStyle=MK[m.k].c;x.fill();x.lineWidth=R/5;x.strokeStyle="#16191C";x.stroke();
+    x.fillStyle="#16191C";x.font=`700 ${Math.round(R*1.2)}px sans-serif`;x.textAlign="center";x.textBaseline="middle";x.fillText(MK[m.k].l,X,Y+1);x.textAlign="start";x.textBaseline="alphabetic";}
+}
+function fotoRender(){
+  chips($("pfF"),F,st.f,v=>String(v),v=>st.f=v);
+  chips($("poChips"),[{v:"h",t:"Orizzontale"},{v:"v",t:"Verticale"}],st.or,null,v=>st.or=v);
+  chips($("pfChips"),[{v:13,t:"0,5x"},{v:24,t:"1x"},{v:48,t:"2x"},{v:120,t:"5x"}],st.pf,null,v=>st.pf=v);
+  $("pfNote").textContent=fExif?`Letto dalla foto: ${fExif===13?"0,5x":fExif===24?"1x":fExif===48?"2x":fExif===120?"5x":fExif+" mm equivalenti"}.`:"Scegli lo zoom con cui hai fatto la foto (quello che vedi nell'app Fotocamera). Se la foto lo dice, lo leggo da solo. Il mirino usa sempre 1x.";
+  const mc=$("mkChips"); mc.innerHTML="";
+  [["v","Oggetto vicino"],["a","Oggetto alto"],["x","Togli ultimo"]].forEach(([k,t])=>{const b=document.createElement("button");b.type="button";b.textContent=t;
+    b.setAttribute("aria-pressed",k===mkMode);b.onclick=()=>{if(k==="x"){fMk.pop();}else mkMode=k;fotoRender();};mc.appendChild(b);});
+  $("fCard").hidden=!fImg; $("aiCard").hidden=!fImg; $("fTodo").hidden=!fImg;
+  if(!fImg) return;
+  drawPhoto();
+  const W=fImg.width,Hh=fImg.height, fit=L=>{const r=frameOf(W,Hh,L);return r.w<=W/2+1&&r.h<=Hh/2+1;};
+  let ft=fit(st.f)?`<div class="vd g" style="margin:12px 0 0"><div class="t">Col ${st.f} sul vetro vedi la parte chiara.</div><p>Il resto della foto resta fuori.</p></div>`
+    :`<div class="vd o" style="margin:12px 0 0"><div class="t">Il ${st.f} vede più largo di questa foto.</div><p>Rifai la foto col telefono a ${st.pf>48?"2x o 1x":st.pf>24?"1x":st.pf>13?"0,5x":"distanza maggiore"} per vedere tutta la cornice.</p></div>`;
+  $("fFit").innerHTML=ft;
+  const v=fMk.some(m=>m.k==="v"), a=fMk.some(m=>m.k==="a"); let td="";
+  if(v) td+=`<li><b>Oggetto vicino (V)</b>: pagina Iperfocale, Oggetto più vicino (lunghezza indiretta, numero grande). Se serve il tilt: nella pagina Tilt, piede (Punto 1) e cima (Punto 2), d e α.</li>`;
+  if(a) td+=`<li><b>Oggetto alto (A)</b>: pagina Tilt, Cosa deve restare nitido. Vicino se il laser ci arriva (d e α), lontano se no (solo l'angolo). Oppure Tilt + Swing.</li>`;
+  if(v||a) td+=`<li>Se il terreno sale o scende, nella pagina Tilt anche il Punto 3, il terreno lontano; se il piano è di sbieco, tre punti in Tilt + Swing.</li>`;
+  else td=`<li>Segna sulla foto l'oggetto più vicino (V) e quello più alto (A): ti dico cosa misurare.</li>`;
+  $("fTodoL").innerHTML=td;
+  $("aiKey").value=getKey(); $("aiMod").value=getMod();
+}
+const getKey=()=>{try{return localStorage.getItem("campoP2key")||"";}catch(e){return "";}};
+const getMod=()=>{try{return localStorage.getItem("campoP2mod")||"claude-sonnet-5-5";}catch(e){return "claude-sonnet-5-5";}};
+function loadImg(src,ex){const im=new Image();im.onload=()=>{fImg=im;fExif=ex;fMk=[];$("aiOut").innerHTML="";save();fotoRender();};im.src=src;}
+$("fIn").addEventListener("change",async e=>{const f=e.target.files[0]; if(!f) return; let ex=null;
+  try{ex=exif35(await f.arrayBuffer());}catch(_){}
+  if(ex) st.pf=ex; loadImg(URL.createObjectURL(f),ex); e.target.value="";});
+$("fCan").addEventListener("click",e=>{const r=e.target.getBoundingClientRect();fMk=fMk.filter(m=>m.k!==mkMode);
+  fMk.push({k:mkMode,x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height});if(mkMode==="v")mkMode="a";fotoRender();});
+function mDraw(){const v=$("mVid"),c=$("mCan"); if(!mStream) return; if(v.videoWidth){c.width=v.videoWidth;c.height=v.videoHeight;
+  const x=c.getContext("2d");x.clearRect(0,0,c.width,c.height);drawFrames(x,c.width,c.height,1);} requestAnimationFrame(mDraw);}
+$("mOpen").onclick=async()=>{$("mErr").innerHTML="";
+  try{mStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:1920},height:{ideal:1440}},audio:false});
+    $("mVid").srcObject=mStream;$("mBox").hidden=false;fExif=null;st.pf=24;save();fotoRender();mDraw();}
+  catch(err){$("mErr").innerHTML=`<div class="note warn">Non riesco ad aprire la fotocamera. Consenti l'accesso alla fotocamera per Campo P2, oppure usa "Scatta o importa".</div>`;}};
+function mStop(){if(mStream){mStream.getTracks().forEach(t=>t.stop());mStream=null;}$("mBox").hidden=true;}
+$("mClose").onclick=mStop;
+$("mShot").onclick=()=>{const v=$("mVid");const c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;c.getContext("2d").drawImage(v,0,0);mStop();loadImg(c.toDataURL("image/jpeg",0.9),null);};
+$("aiKey").addEventListener("change",e=>{try{localStorage.setItem("campoP2key",e.target.value.trim());}catch(_){}});
+$("aiMod").addEventListener("change",e=>{try{localStorage.setItem("campoP2mod",e.target.value.trim()||"claude-sonnet-5-5");}catch(_){}});
+function md(t){const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");let h="",inL=false;
+  for(let l of t.split("\n")){l=esc(l.trim()).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+    if(/^[-*] /.test(l)){if(!inL){h+="<ul>";inL=true;}h+="<li>"+l.slice(2)+"</li>";continue;}
+    if(inL){h+="</ul>";inL=false;}
+    if(/^#+ /.test(l)) h+="<h3>"+l.replace(/^#+ /,"")+"</h3>"; else if(l) h+="<p>"+l+"</p>";}
+  return h+(inL?"</ul>":"");}
+$("aiGo").onclick=async()=>{const key=getKey(), out=$("aiOut");
+  if(!key){$("aiSet").open=true;out.innerHTML=`<div class="note warn">Scrivi la chiave API qui sopra (una volta sola).</div>`;return;}
+  drawPhoto(true); const src=$("fCan"); const sc=Math.min(1,1568/Math.max(src.width,src.height));
+  const c=document.createElement("canvas");c.width=Math.round(src.width*sc);c.height=Math.round(src.height*sc);c.getContext("2d").drawImage(src,0,0,c.width,c.height);
+  const b64=c.toDataURL("image/jpeg",0.85).split(",")[1];
+  const mk=fMk.map(m=>`${MK[m.k].l} = ${MK[m.k].t.toLowerCase()}`).join("; ")||"nessuno";
+  const sys="Sei un fotografo esperto di grande formato e di bianco e nero (sistema zonale). Aiuti un fotografo in campo con un banco ottico Sinar P2 4x5. Rispondi in italiano, in modo breve e concreto, con frasi semplici. Non usare trattini lunghi. Non dare distanze, altezze o angoli stimati dalla foto: le misure le prende lui col Bosch GLM 120 C. Non proporre decentramenti (shift): solo tilt e swing dello standard anteriore. Per i movimenti indica il verso (tilt avanti o indietro, swing con bordo sinistro avanti o indietro, visto da dietro il banco) e quale pagina dell'app usare: Iperfocale (nessun movimento), Tilt, Swing, Tilt + Swing.";
+  const txt=`Foto fatta con iPhone 16 Pro Max (obiettivo ${st.pf} mm equivalenti). Il rettangolo azzurro è la cornice del 4x5 con l'obiettivo da ${st.f} mm, inquadratura ${st.or==="h"?"orizzontale":"verticale"}; i rettangoli gialli tratteggiati sono gli obiettivi ${lensPair().join(" e ")} mm. Punti segnati: ${mk}. Diaframma previsto ${fN(st.n)}.${$("aiQ").value.trim()?" Cosa vuole ottenere: "+$("aiQ").value.trim():""}
+Rispondi con queste sezioni, titolo con ## :
+## Inquadratura
+## Obiettivo
+## Movimenti
+## Cosa misurare col Bosch
+## Luce ed esposizione
+## Attenzione`;
+  out.innerHTML=`<div class="note">Sto chiedendo il parere…</div>`; $("aiGo").disabled=true;
+  try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:getMod(),max_tokens:1200,system:sys,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:"image/jpeg",data:b64}},{type:"text",text:txt}]}]})});
+    const j=await r.json();
+    if(!r.ok) throw new Error(j.error&&j.error.message||("errore "+r.status));
+    out.innerHTML=md(j.content.filter(x=>x.type==="text").map(x=>x.text).join("\n"))+`<div class="minor">È un parere: i numeri li prendi col Bosch nelle altre pagine.</div>`;
+  }catch(err){out.innerHTML=`<div class="note warn">Parere non disponibile: ${String(err.message||err).replace(/</g,"&lt;")}. Controlla la rete e la chiave.</div>`;}
+  $("aiGo").disabled=false;};
+$("theme").onclick=()=>{st.theme=st.theme==="dark"?"light":"dark";save();render();};
+render();
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
+
+// RITRATTO (pagina indipendente)
+function rRender(){
+  const RT=[{v:"pp",t:"Primissimo piano"},{v:"p",t:"Primo piano"},{v:"mb",t:"Mezzo busto"},{v:"tq",t:"3/4"},{v:"fi",t:"Figura intera"}];
+  const RTN={pp:"primissimo piano (viso)",p:"primo piano (testa e collo)",mb:"mezzo busto",tq:"3/4 (fino alle ginocchia)",fi:"figura intera"};
+  if(st.rf==null) st.rf=150; if(!st.ro) st.ro="v"; if(st.rH==null) st.rH="1,75"; if(!st.rt) st.rt="pp"; if(!st.rm) st.rm="d";
+  chips($("rfChips"),[150,210,250,300],st.rf,v=>v,v=>st.rf=v);
+  chips($("roChips"),[{v:"v",t:"Verticale"},{v:"h",t:"Orizzontale"}],st.ro,null,v=>st.ro=v);
+  chips($("rtChips"),RT,st.rt,null,v=>st.rt=v);
+  chips($("rmChips"),[{v:"d",t:"Distanza col Bosch"},{v:"e",t:"Soffietto"}],st.rm,null,v=>st.rm=v);
+  for(const k of ["rH","rD","rE"]) if(document.activeElement!==$(k))$(k).value=st[k]||"";
+  $("rRowD").hidden=st.rm!=="d"; $("rRowE").hidden=st.rm!=="e";
+  $("rMNote").textContent=st.rm==="d"?"Bosch puntato sugli occhi, col bordo posteriore all'altezza della tavoletta dell'obiettivo (il Bosch misura dal bordo posteriore).":"Allunga il soffietto per comporre, poi leggi sulla scala della rotaia di quanto il posteriore si è spostato rispetto alla posizione di infinito.";
+  const f=st.rf, side=st.ro==="v"?120:96, H=num(st.rH);
+  let sm="";
+  if(H>0.5&&H<2.3){
+    const r=Math.min(1/6,Math.max(1/7.5,1/7.5+(1.75-H)*(1/6-1/7.5)/0.6)), head=H*r;
+    const hgt={pp:head*1.15,p:head*1.6,mb:H*0.34,tq:H*0.76,fi:H*1.08}[st.rt];
+    const m=side/(hgt*1000), u=f*(1+1/m)/1000, v=f*(1+m);
+    sm=`<span class="lab">Stima per piazzare il treppiede</span><div class="big" style="font-size:34px">${dist(u)}</div><div class="sub">Distanza obiettivo-soggetto. ${RTN[st.rt][0].toUpperCase()+RTN[st.rt].slice(1)}: inquadri circa ${Math.round(hgt*100)} cm di altezza. Testa stimata ${Math.round(head*100)} cm.</div>
+      <dl><dt>Ingrandimento</dt><dd>${fmt(m,2)} (1:${fmt(1/m,1)})</dd><dt>Soffietto</dt><dd>${Math.round(v)} mm (allunga di ${Math.round(v-f)} mm)</dd></dl>${u<1.2&&(st.rt==="pp"||st.rt==="p")?`<div class="note warn">A ${dist(u)} dal viso il naso viene ingrandito rispetto alle orecchie. Per un viso conviene stare ad almeno 1,2-1,5 m: col 4x5 vuol dire un 250 o un 300.</div>`:""}`;
+  }else sm=`<span class="lab">Stima</span><p style="margin:4px 0 0">Scrivi l'altezza del soggetto.</p>`;
+  $("rStima").innerHTML=sm;
+  let m=NaN;
+  if(st.rm==="d"){const D=num(st.rD); if(D*1000>f) m=f/(D*1000-f);} else {const E=num(st.rE); if(E>0) m=E/f;}
+  let mis="";
+  if(m>0){
+    const u=f*(1+1/m)/1000, v=f*(1+m), hgt=side/m/1000, bf=2*Math.log2(1+m);
+    mis=`<div class="result"><span class="lab">Misura vera</span><div class="big" style="font-size:34px">1:${fmt(1/m,1)}</div>
+      <dl><dt>Ingrandimento</dt><dd>${fmt(m,2)}</dd><dt>Distanza obiettivo-soggetto</dt><dd>${dist(u)}</dd><dt>Soffietto</dt><dd>${Math.round(v)} mm (+${Math.round(v-f)} mm)</dd><dt>Altezza inquadrata</dt><dd>${Math.round(hgt*100)} cm</dd><dt>Fattore soffietto</dt><dd>+${fmt(bf,1)} stop</dd></dl>
+      <div class="note">Da qui partono fuoco ed esposizione.</div></div>`;
+  }
+  $("rMis").innerHTML=mis;
+  // ---- blocco 2: fuoco
+  if(st.rc==null) st.rc=0.1; if(!st.rpm) st.rpm="e"; if(!st.rd) st.rd="v";
+  chips($("rcChips"),[{v:0.1,t:"Normale 0,1"},{v:0.05,t:"Severo 0,05"}],st.rc,null,v=>st.rc=v);
+  chips($("rpmChips"),[{v:"e",t:"Stima"},{v:"s",t:"Metodo Sinar (due letture)"}],st.rpm,null,v=>st.rpm=v);
+  const DEP={o:2,v:12,ts:25,x:NaN};
+  chips($("rdChips"),[{v:"o",t:"Solo gli occhi"},{v:"v",t:"Tutto il viso"},{v:"ts",t:"Testa e spalle"},{v:"x",t:"Misura mia"}],st.rd,null,v=>st.rd=v);
+  for(const k of ["rr1","rr2","rDep","rBg"]) if(document.activeElement!==$(k))$(k).value=st[k]||"";
+  $("rpS").hidden=st.rpm!=="s"; $("rpE").hidden=st.rpm!=="e"; $("rRowDep").hidden=st.rd!=="x";
+  let fu=""; window.rNb=null;
+  const c=st.rc, lam=0.00055;
+  if(!(m>0)) fu=`<div class="vd"><p style="margin:0">Prima fai la misura vera nel blocco 1.</p></div>`;
+  else{
+    let D=NaN, mid=NaN, depTxt="";
+    const cmr=x=>{const y=num(x);return isFinite(y)?(y>40?y/10:y):NaN;};
+    if(st.rpm==="s"){ const a=cmr(st.rr1), b=cmr(st.rr2); if(isFinite(a)&&isFinite(b)&&a!==b){ D=Math.abs(b-a)*10; mid=(a+b)/2; depTxt=`dalle letture: ${fmt(D,1)} mm in pellicola (circa ${Math.round(D/(m*m)/10)} cm sul soggetto)`; } }
+    else { const dep=st.rd==="x"?num(st.rDep):DEP[st.rd]; if(dep>0){ D=dep*10*m*m; depTxt=`${fmt(dep,0)} cm sul soggetto, cioè ${fmt(D,1)} mm in pellicola`; } }
+    if(!(D>0)) fu=`<div class="vd"><p style="margin:0">${st.rpm==="s"?"Scrivi le due letture.":"Scrivi la profondità da tenere nitida."}</p></div>`;
+    else{
+      const Nraw=D/(2*c*(1+m));
+      const Nopt=Math.sqrt(D/(2*2.44*lam))/(1+m), Nopt3=NT.reduce((a,b)=>Math.abs(Math.log(b/Nopt))<Math.abs(Math.log(a/Nopt))?b:a);
+      const blur=n=>Math.hypot(D/(2*n*(1+m)),2.44*lam*n*(1+m));
+      const Nok=NT.find(x=>x>=Nraw-1e-9&&blur(x)<=c*1.0001);
+      const N=Nok||Nopt3; window.rNb=N; const tot=blur(N), dif=2.44*lam*N*(1+m), geo=D/(2*N*(1+m));
+      const cls=Nok?"g":tot<=c*1.5?"y":"o";
+      fu+=`<div class="result"><span class="lab">Diaframma (${depTxt})</span><div class="big">${fN(N)}</div>
+        <div class="sub">Sul barilotto ${fN(N)}: col soffietto lavora come ${fN(Math.round(N*(1+m)))}.${isFinite(mid)?` Porta il puntino su <b>${fmt(mid,2)}</b>, a metà fra le due letture.`:" Metti a fuoco a metà della profondità: da vicino è quasi simmetrica, quindi circa sugli occhi."}</div>
+        <dl><dt>Sfocato ai bordi della profondità</dt><dd>${fmt(geo,3)} mm</dd><dt>Diffrazione</dt><dd>${fmt(dif,3)} mm</dd><dt>Nitidezza effettiva (somma dei due)</dt><dd>${fmt(tot,3)} mm (criterio ${fmt(c,2)})</dd></dl></div>`;
+      if(Nok) fu+=`<div class="vd g"><div class="t">Tutto il soggetto nitido.</div><p>A ${fN(N)} sfocato e diffrazione insieme restano entro il criterio. Non chiudere di più: la diffrazione peggiorerebbe.</p></div>`;
+      else{
+        const Dmax=c*c/(2.44*lam), dep0=D/(m*m), mMax=Math.sqrt(Dmax/dep0), side=st.ro==="v"?120:96;
+        fu+=`<div class="vd ${cls}"><div class="t">${cls==="y"?"Quasi tutto nitido.":"Non si può avere tutto nitido."}</div><p>${fN(N)} è il diaframma migliore: chiudendo di più la diffrazione ammorbidisce tutto, aprendo si perde profondità. Per avere tutto entro il criterio inquadra più largo: almeno <b>${Math.round(side/mMax/10)} cm</b> di soggetto sul lato lungo (ingrandimento ${fmt(mMax,2)}), e stringi in stampa. Oppure accetta i capelli dietro appena morbidi.</p></div>`;
+      }
+      const Bg=num(st.rBg), Nu=N;
+      if(Bg>0){ const u=f*(1+1/m), b=f*m/Nu*(Bg*1000/(u+Bg*1000)); fu+=`<div class="vd ${b>c*5?"g":b>c*2?"y":"o"}"><div class="t">Sfondo a ${dist(Bg)} dietro: ${b>c*5?"ben sfocato":b>c*2?"sfocato, ma si legge":"quasi nitido"}.</div><p>Sfocato in pellicola ${fmt(b,2)} mm, cioè ${fmt(b/c,0)} volte il criterio. ${b>c*5?"":"Allontana lo sfondo dal soggetto."}</p></div>`; }
+      fu+=`<div class="card"><span class="lab">Sul banco, passo per passo</span><ol class="steps"><li>Soggetto seduto, testa appoggiata a uno schienale o a un poggiatesta.</li><li>Componi e metti a fuoco col <b>posteriore</b>, a diaframma tutto aperto, col lentino sotto il cappuccio.</li>${st.rpm==="s"?`<li>Fuoco sulla punta del naso: leggi la scala. Fuoco sul retro dell'orecchio: leggi la scala.</li><li>Porta il puntino a metà, su <b>${isFinite(mid)?fmt(mid,2):"?"}</b>.</li>`:`<li>Fuoco sugli occhi.</li>`}<li>Chiudi a <b>${fN(N)}</b> e controlla col lentino naso, occhi e orecchie.</li><li>Un centimetro di movimento della testa sposta il fuoco di ${fmt(10*m*m,1)} mm in pellicola: scatta subito dopo il controllo.</li></ol></div>`;
+    }
+  }
+  $("rFuoco").innerHTML=fu;
+  rEsp(m, window.rNb);
+}
+function rEsp(m,Nb){
+  const SC=[{v:1,t:"Esterno, luce naturale"},{v:2,t:"Esterno + flash di riempimento"},{v:3,t:"Esterno, flash principale"},{v:4,t:"Interni, 1 flash"},{v:5,t:"Interni, 2 flash"},{v:6,t:"Interni, 3 flash"},{v:7,t:"Interni, 4 flash"}];
+  if(!st.rs) st.rs=1; if(!st.rts) st.rts="1/60"; if(st.rk==null) st.rk=1.5; if(!st.rp) st.rp="b"; if(st.rrim==null) st.rrim=0.5; if(st.rbz==null) st.rbz=5;
+  chips($("rsChips"),SC,st.rs,null,v=>st.rs=v);
+  const Nw=st.rNx||Nb||22;
+  chips($("rnChips"),NT.filter(x=>x>=8),Nw,v=>String(v).replace(".",","),v=>st.rNx=v);
+  chips($("rtsChips"),["1/15","1/30","1/60","1/125","1/250"],st.rts,v=>v,v=>st.rts=v);
+  chips($("rkChips"),[{v:1,t:"−1 stop (2:1)"},{v:1.5,t:"−1,5 (3:1)"},{v:2,t:"−2 (4:1)"},{v:3,t:"−3 (8:1)"}],st.rk,null,v=>st.rk=v);
+  chips($("rpChips"),[{v:"b",t:"Pannello bianco"},{v:"a",t:"Pannello argento"},{v:"n",t:"Nessuna"}],st.rp,null,v=>st.rp=v);
+  chips($("rrimChips"),[{v:0,t:"Uguale"},{v:0.5,t:"+0,5"},{v:1,t:"+1 stop"}],st.rrim,null,v=>st.rrim=v);
+  chips($("rbzChips"),[3,4,5,6,7].map(z=>({v:z,t:"Zona "+["","I","II","III","IV","V","VI","VII"][z]})),st.rbz,null,v=>st.rbz=v);
+  for(const k of ["rAmb","rAmbS","rLK","rLF","rLP","rLR","rLB"]) if(document.activeElement!==$(k))$(k).value=st[k]||"";
+  const sc=st.rs, flash=sc>=2, inside=sc>=4, nFl={4:1,5:2,6:3,7:4}[sc]||1;
+  $("rRowT").hidden=!inside; $("rCAmb").hidden=inside; $("rCFl").hidden=!flash;
+  $("rRowK").hidden=!(sc===2||sc>=5); $("rRowP").hidden=sc!==4; $("rRowRim").hidden=sc<6; $("rRowBz").hidden=sc<7;
+  $("rWF").hidden=!(sc>=5); $("rWP").hidden=!(sc===4&&st.rp!=="n"); $("rWR").hidden=sc<6; $("rWB").hidden=sc<7;
+  $("rLK").parentElement.hidden=sc===2;
+  $("rAmbNote").textContent=sc===1?"Luce incidente: cupola davanti al viso, puntata verso l'obiettivo. Il secondo valore, dal lato in ombra, ti dà il contrasto del viso.":"Modalità ambiente, cupola davanti al viso verso l'obiettivo, al diaframma di lavoro.";
+  const bf=m>0?2*Math.log2(1+m):0, s2=x=>2*Math.log2(x), stp=x=>fmt(Math.round(x*10)/10,1);
+  // promemoria Sekonic
+  $("rSek").innerHTML=m>0?`<div class="result"><span class="lab">Sul Sekonic, prima di misurare</span><div class="big" style="font-size:30px">ISO 80, Filtro −${stp(bf)}</div><div class="sub">È il fattore soffietto del blocco 1, nella <b>compensazione filtro</b> (Tool Box, Set Filter Compensation, Input Filter Comp. Value): vale insieme per incidente, spot, ambiente e flash, e ogni lettura è già corretta. Col filtro il meno dà più luce. La compensazione esposizione dell'incidente deve essere a 0; il −2,0 dello spot resta com'è. ${flash?(sc===2||sc===3?"Prima modalità ambiente per il sole, poi flash cordless per il flash da solo, priorità diaframma.":`Modalità flash cordless, tempo ${st.rts}, priorità diaframma.`):"Modalità ambiente, priorità diaframma, luce incidente."} Finito il ritratto, togli il filtro (No Filter).</div></div>`:`<div class="vd"><p style="margin:0">Fai prima la misura vera nel blocco 1: serve per il fattore soffietto.</p></div>`;
+  const pT=x=>{x=String(x||"").trim().replace(",",".");if(!x)return NaN;if(x.includes("/")){const [a,b]=x.split("/").map(parseFloat);return a>0&&b>0?a/b:NaN;}const v=parseFloat(x);return v>0?v:NaN;};
+  const fT=t=>{if(t>=1)return fmt(t,t>=10?0:1)+" s";const d=1/t,std=[2,4,8,15,30,60,125,250,500];const n=std.reduce((a,b)=>Math.abs(Math.log(b/d))<Math.abs(Math.log(a/d))?b:a);return "1/"+n;};
+  const pF=x=>{x=String(x||"").trim().replace(",",".");if(!x)return NaN;const q=x.split(/\s+/).map(parseFloat);if(!(q[0]>0))return NaN;return s2(q[0])+(q[1]>0?q[1]/10:0);};
+  const fF=v=>{const n=NT.reduce((a,b)=>Math.abs(s2(b)-v)<Math.abs(s2(a)-v)?b:a);return fN(n);};
+  const recip=t=>t>0.5?Math.pow(t,1.48):t;
+  const zr=z=>["","I","II","III","IV","V","VI","VII","VIII","IX","X"][Math.max(1,Math.min(10,Math.round(z)))];
+  let out="";
+  const target=s2(Nw);
+  const tell=(name,read,tg)=>{ if(!isFinite(read)) return `<p>${name}: scrivi la lettura.</p>`; const d=read-tg, a=Math.abs(d);
+    if(a<=0.15) return `<p><b>${name}</b>: giusta (${fF(read)}).</p>`;
+    if(d>0) return `<p><b>${name}</b>: troppa luce di ${stp(a)} stop. Abbassa la potenza di ${stp(a)} stop, oppure allontana la luce: distanza × ${fmt(Math.pow(2,a/2),2)}.</p>`;
+    return `<p><b>${name}</b>: manca ${stp(a)} stop. Alza la potenza di ${stp(a)} stop, oppure avvicina la luce: distanza × ${fmt(Math.pow(2,-a/2),2)}. Se sei già al massimo: ${Math.ceil(Math.pow(2,a)-1e-6)} lampi sommati in posa B, al buio.</p>`; };
+  if(sc===1){
+    const t=pT(st.rAmb), ts=pT(st.rAmbS);
+    if(t>0){ const tc=recip(t);
+      out+=`<div class="result"><span class="lab">Tempo di posa a ${fN(Nw)}</span><div class="big">${fT(tc)}</div><div class="sub">${tc>t*1.05?`Letto ${fT(t)}, corretto per il difetto di reciprocità della FP4+ (tempo<sup>1,48</sup> oltre 1/2 s).`:"Il tiraggio è già nella lettura, grazie alla compensazione."}</div></div>`;
+      if(tc>0.5) out+=`<div class="vd o"><div class="t">Rischio di mosso.</div><p>Oltre 1/2 s il soggetto si muove. In ordine: poggiatesta e scatto a fine espirazione; pannello bianco vicino al viso (circa +1 stop nelle ombre, non cambia il tempo della luce principale); diaframma più aperto con un'inquadratura più larga; flash.</p></div>`;
+      else if(tc>1/15) out+=`<div class="vd y"><div class="t">Tempo lungo per un ritratto.</div><p>Fino a 1/2 s si può, col soggetto appoggiato e fermo.</p></div>`;
+      if(ts>0){ const r=Math.log2(ts/t); out+=`<div class="vd ${r>2.5?"o":r>1.5?"y":"g"}"><div class="t">Contrasto del viso: ${stp(r)} stop.</div><p>Pelle in luce in zona VI, lato in ombra in zona ${zr(6-r)}. ${r>2.5?"Ombre molto scure: schiarisci con un pannello bianco, oppure sviluppo N+1 solo se il resto della scena è morbido.":r<1?"Luce piatta: per dare forma togli luce da un lato con il nero del pannello.":"Contrasto da ritratto classico."}</p></div>`; }
+    } else out+=`<div class="vd"><p style="margin:0">Misura la luce sul viso e scrivi il tempo letto a ${fN(Nw)}.</p></div>`;
+  }
+  if(sc===2||sc===3){
+    const t=pT(st.rAmb), ts=pT(st.rts), k=st.rk;
+    if(t>0){
+      const dAmb=Math.log2(ts/t); // >0: ambiente più che sufficiente
+      if(sc===2){
+        out+=`<div class="result"><span class="lab">Riempimento</span><div class="big" style="font-size:30px">Flash da solo: ${fF(target-k)}</div><div class="sub">La luce del sole resta la principale: tempo di posa ${fT(t)} a ${fN(Nw)}. Il flash schiarisce le ombre di ${stp(k)} stop sotto.</div></div>`;
+        if(t<1/400) out+=`<div class="vd o"><div class="t">Tempo troppo breve per il Compur.</div><p>Serve ${fT(t)}: più veloce di 1/400. Chiudi il diaframma o metti un filtro ND.</p></div>`;
+      }else{
+        const ta=t/Math.pow(2,k);
+        out+=`<div class="result"><span class="lab">Flash principale</span><div class="big" style="font-size:30px">Flash da solo: ${fN(Nw)}</div><div class="sub">Tempo ${fT(ta)}: l'ambiente (e il cielo) scende di ${stp(k)} stop sotto il flash.</div></div>`;
+        if(ta<1/400) out+=`<div class="vd o"><div class="t">Tempo troppo breve per il Compur.</div><p>Servirebbe ${fT(ta)}. Metti un ND sull'obiettivo e alza la potenza del flash della stessa quantità.</p></div>`;
+      }
+      const rk=pF(st.rLF||st.rLK);
+      out+=`<div class="vd">${tell("Flash",pF(sc===2?st.rLF:st.rLK),sc===2?target-k:target)}</div>`;
+    } else out+=`<div class="vd"><p style="margin:0">Misura prima l'ambiente al diaframma ${fN(Nw)} e scrivi il tempo letto.</p></div>`;
+  }
+  if(inside){
+    out+=`<div class="result"><span class="lab">Obiettivi per le luci (a ${fN(Nw)})</span><dl>
+      <dt>Principale</dt><dd>${fN(Nw)}</dd>
+      ${sc===4&&st.rp!=="n"?`<dt>Lato in ombra col pannello</dt><dd>circa ${fF(target-(st.rp==="b"?2:1))}</dd>`:""}
+      ${sc>=5?`<dt>Riempimento</dt><dd>${fF(target-st.rk)} (${stp(st.rk)} stop sotto)</dd>`:""}
+      ${sc>=6?`<dt>Capelli</dt><dd>${fF(target+st.rrim)}</dd>`:""}
+      ${sc>=7?`<dt>Fondale</dt><dd>${fF(target+st.rbz-5)} (zona ${zr(st.rbz)})</dd>`:""}
+      </dl><div class="sub">Tempo ${st.rts}: in studio serve solo a tenere fuori la luce ambiente. Controlla che l'ambiente, al diaframma di lavoro, legga almeno 3 stop sotto.</div></div>`;
+    let tl=tell("Principale",pF(st.rLK),target);
+    if(sc>=5) tl+=tell("Riempimento",pF(st.rLF),target-st.rk);
+    if(sc===4&&st.rp!=="n"){ const r=pF(st.rLP); if(isFinite(r)&&isFinite(pF(st.rLK))){ const d=pF(st.rLK)-r; tl+=`<p><b>Pannello</b>: il lato in ombra è ${stp(d)} stop sotto la principale (zona ${zr(6-d)}). ${d>2.2?"Avvicina il pannello al viso.":d<0.8?"Allontana il pannello: il viso è troppo piatto.":"Va bene."}</p>`; } }
+    if(sc>=6) tl+=tell("Capelli",pF(st.rLR),target+st.rrim);
+    if(sc>=7) tl+=tell("Fondale",pF(st.rLB),target+st.rbz-5);
+    out+=`<div class="vd">${tl}</div>`;
+    const lk=pF(st.rLK), lf=sc>=5?pF(st.rLF):sc===4&&st.rp!=="n"?pF(st.rLP):NaN;
+    if(isFinite(lk)&&isFinite(lf)){ const r=lk-lf; out+=`<div class="vd g"><div class="t">Rapporto di luce: ${stp(r)} stop (${fmt(Math.pow(2,r)+ (sc>=5?1:0)*0,1)}:1).</div><p>Pelle in luce zona VI, lato in ombra zona ${zr(6-r)}.</p></div>`; }
+    out+=`<div class="note">Durata del lampo: si misura nella modalità a parte "Flash Duration Analysis", con il valore t da t0.1 a t0.9. Sul Godox, potenza bassa = lampo più breve. Il Compur sincronizza il flash a tutti i tempi.</div>`;
+  }
+  $("rEsp").innerHTML=out;
+  // ---- blocco 4: sviluppo
+  for(const k of ["rZs","rZh"]) if(document.activeElement!==$(k))$(k).value=st[k]||"";
+  const zs=num(st.rZs), zh=num(st.rZh);
+  let sv="";
+  if(isFinite(zs)&&isFinite(zh)&&zh>zs){
+    let add=0; const zS=5+zs;
+    if(zS<3-0.15) add=3-zS;
+    const zH=5+zh+add, d=zH-8, Nd=Math.max(-2,Math.min(2,-Math.round(d)));
+    const nTxt=Nd===0?"N":Nd>0?"N+"+Nd:"N−"+(-Nd);
+    sv+=`<div class="result"><span class="lab">Sviluppo</span><div class="big">${nTxt}${Math.abs(d)>2.4?" non basta":""}</div><dl>
+      <dt>Contrasto della scena</dt><dd>${fmt(zh-zs,1)} stop</dd>
+      <dt>Ombra con dettaglio</dt><dd>zona ${zr(zS+add)}${add?` (era ${zr(zS)})`:""}</dd>
+      <dt>Pelle in luce</dt><dd>circa zona ${zr(6+add)}</dd>
+      <dt>Alta luce con dettaglio</dt><dd>zona ${zr(zH)}${Nd!==0?`, portata in VIII dallo sviluppo`:""}</dd></dl></div>`;
+    if(add>0) sv+=`<div class="vd y"><div class="t">Aggiungi ${stp(add)} stop di esposizione.</div><p>L'ombra cadeva in zona ${zr(zS)}, senza dettaglio. Allunga il tempo (× ${fmt(Math.pow(2,add),1)}) oppure, col flash, alza tutte le luci della stessa quantità. Poi lo sviluppo ${nTxt} riporta le alte luci in zona VIII.${6+add>7.4?" Attento: la pelle sale verso la zona VII-VIII, quindi abbassa il riempimento invece di sovraesporre.":""}</p></div>`;
+    if(Math.abs(d)>2.4) sv+=`<div class="vd o"><div class="t">Contrasto fuori portata dello sviluppo.</div><p>${d>0?"Troppo contrasto anche con N−2: schiarisci le ombre (pannello, riempimento) invece di contare sullo sviluppo.":"Scena molto piatta anche con N+2: dai forma con la luce, togli il riempimento o usa il nero del pannello."}</p></div>`;
+    else sv+=`<div class="vd g"><div class="t">${Nd===0?"Sviluppo normale.":Nd<0?"Sviluppo ridotto.":"Sviluppo aumentato."}</div><p>Zona VIII = N, IX = N−1, X = N−2, VII = N+1. Nel ritratto conviene tenere la pelle in luce fra VI e VII: se serve ${Nd<0?"ridurre":"spingere"} di più, meglio agire sulla luce.</p></div>`;
+  } else sv=`<div class="vd"><p style="margin:0">Scrivi le due differenze lette col Sekonic.</p></div>`;
+  $("rSvil").innerHTML=sv;
+}
+
+for(const k of ["rH","rD","rE","rr1","rr2","rDep","rBg","rAmb","rAmbS","rLK","rLF","rLP","rLR","rLB","rZs","rZh"]) $(k).addEventListener("input",e=>{st[k]=e.target.value;save();render();});
+
+// MACRO (pagina indipendente)
+function kRender(){
+  const d=(k,v)=>{if(st[k]==null||st[k]==="")st[k]=v;};
+  d("kf",120); d("ko","h"); d("kn",1); d("km","r"); d("kc",0.1); d("kpm","e"); d("kd","fi"); d("ks",1);
+  chips($("kfChips"),[120,150,180,210],st.kf,v=>v,v=>st.kf=v);
+  chips($("koChips"),[{v:"h",t:"Orizzontale"},{v:"v",t:"Verticale"}],st.ko,null,v=>st.ko=v);
+  chips($("knChips"),[{v:1,t:"1 soffietto"},{v:2,t:"2 + standarta intermedia"},{v:3,t:"3 + 2 standarte"}],st.kn,null,v=>st.kn=v);
+  chips($("kmChips"),[{v:"r",t:"Righello sul vetro"},{v:"e",t:"Soffietto"}],st.km,null,v=>st.km=v);
+  chips($("kcChips"),[{v:0.1,t:"Normale 0,1"},{v:0.05,t:"Severo 0,05"}],st.kc,null,v=>st.kc=v);
+  chips($("kpmChips"),[{v:"e",t:"Stima"},{v:"s",t:"Metodo Sinar (due letture)"}],st.kpm,null,v=>st.kpm=v);
+  chips($("kdChips"),[{v:"pi",t:"Superficie piatta (foglia, corteccia)"},{v:"fi",t:"Fiore"},{v:"in",t:"Insetto"},{v:"x",t:"Misura mia"}],st.kd,null,v=>st.kd=v);
+  chips($("ksChips"),[{v:1,t:"Luce naturale"},{v:2,t:"Flash vicino"},{v:3,t:"Flash + pannello"}],st.ks,null,v=>st.ks=v);
+  for(const k of ["kL","kS","kOv","kOi","kE","kr1","kr2","kDep","kAmb","kAmbS","kLK","kLP","kZs","kZh"]) if(document.activeElement!==$(k))$(k).value=st[k]||"";
+  $("kWR").hidden=st.km!=="r"; $("kWE").hidden=st.km!=="e"; $("kpS").hidden=st.kpm!=="s"; $("kpE").hidden=st.kpm!=="e"; $("kWD").hidden=st.kd!=="x";
+  $("kWA").hidden=st.ks!==1; $("kWF").hidden=st.ks===1; $("kLP").parentElement.hidden=st.ks!==3;
+  $("kMNote").textContent=st.km==="r"?"Metti un righello nel piano a fuoco, misura sul vetro con un righello trasparente quanto è lungo un tratto noto. È il modo più preciso in macro.":"Leggi sulla scala della rotaia di quanto il posteriore si è spostato rispetto alla posizione di infinito.";
+  const f=st.kf, side=st.ko==="v"?120:96, L=num(st.kL), Lmax=L>0?L*st.kn:NaN, S=num(st.kS);
+  const s2=x=>2*Math.log2(x), stp=x=>fmt(Math.round(x*10)/10,1), zr=z=>["","I","II","III","IV","V","VI","VII","VIII","IX","X"][Math.max(1,Math.min(10,Math.round(z)))];
+  const bell=(m)=>{const v=f*(1+m); if(!(Lmax>0)) return `<div class="note">Scrivi l'allungamento massimo del tuo soffietto per il controllo.</div>`; return v<=Lmax?`<div class="note ok">Soffietto: ${Math.round(v)} mm su ${Math.round(Lmax)} disponibili.</div>`:`<div class="note warn">Servono ${Math.round(v)} mm di soffietto: con ${st.kn} ne hai ${Math.round(Lmax)}. ${st.kn<3?"Aggiungi un soffietto con la standarta intermedia, oppure":"Usa"} un obiettivo più corto: col ${f===120?"120 sei già al più corto":"120 servirebbero "+Math.round(120*(1+m))+" mm"}.</div>`;};
+  let sm="";
+  if(S>0){ const m=side/(S*10), u=f*(1+1/m)/1000;
+    sm=`<span class="lab">Stima</span><div class="big" style="font-size:34px">${m>=1?fmt(m,1)+":1":"1:"+fmt(1/m,1)}</div><div class="sub">Per inquadrare ${fmt(S,1)} cm sul lato lungo.</div><dl><dt>Distanza obiettivo-soggetto</dt><dd>${Math.round(u*100)} cm</dd><dt>Soffietto</dt><dd>${Math.round(f*(1+m))} mm</dd><dt>Esposizione in più</dt><dd>+${stp(s2(1+m))} stop</dd></dl>${bell(m)}`;
+  } else sm=`<span class="lab">Stima</span><p style="margin:4px 0 0">Scrivi quanto è grande il soggetto da inquadrare.</p>`;
+  $("kStima").innerHTML=sm;
+  let m=NaN;
+  if(st.km==="r"){const o=num(st.kOv),i=num(st.kOi); if(o>0&&i>0) m=i/(o*10);} else {const E=num(st.kE); if(E>0) m=E/f;}
+  $("kMis").innerHTML=m>0?`<div class="result"><span class="lab">Misura vera</span><div class="big" style="font-size:34px">${m>=1?fmt(m,2)+":1":"1:"+fmt(1/m,1)}</div><dl><dt>Ingrandimento</dt><dd>${fmt(m,2)}</dd><dt>Distanza obiettivo-soggetto</dt><dd>${Math.round(f*(1+1/m)/10)} cm</dd><dt>Soffietto</dt><dd>${Math.round(f*(1+m))} mm</dd><dt>Campo inquadrato</dt><dd>${fmt(side/m/10,1)} × ${fmt((side===120?96:120)/m/10,1)} cm</dd><dt>Fattore soffietto</dt><dd>+${stp(s2(1+m))} stop</dd></dl>${bell(m)}</div>`:"";
+  // blocco 2
+  const c=st.kc, lam=0.00055; let fu="", Nb=null;
+  if(!(m>0)) fu=`<div class="vd"><p style="margin:0">Prima fai la misura vera nel blocco 1.</p></div>`;
+  else{
+    let D=NaN, mid=NaN, depTxt="";
+    const cmr=x=>{const y=num(x);return isFinite(y)?(y>100?y/10:y):NaN;};
+    if(st.kpm==="s"){const a=cmr(st.kr1),b=cmr(st.kr2); if(isFinite(a)&&isFinite(b)&&a!==b){D=Math.abs(b-a)*10; mid=(a+b)/2; depTxt=`dalle letture: ${fmt(D,1)} mm in pellicola, circa ${fmt(D/(m*m),1)} mm sul soggetto`;}}
+    else{const dep=st.kd==="x"?num(st.kDep):{pi:1,fi:20,in:6}[st.kd]; if(dep>0){D=dep*m*m; depTxt=`${fmt(dep,0)} mm sul soggetto, ${fmt(D,1)} mm in pellicola`;}}
+    if(!(D>0)) fu=`<div class="vd"><p style="margin:0">${st.kpm==="s"?"Scrivi le due letture.":"Scrivi la profondità."}</p></div>`;
+    else{
+      const Nraw=D/(2*c*(1+m)), blur=n=>Math.hypot(D/(2*n*(1+m)),2.44*lam*n*(1+m));
+      const Nopt=Math.sqrt(D/(2*2.44*lam))/(1+m), Nopt3=NT.reduce((a,b)=>Math.abs(Math.log(b/Nopt))<Math.abs(Math.log(a/Nopt))?b:a);
+      const Nok=NT.find(x=>x>=Nraw-1e-9&&blur(x)<=c*1.0001), N=Nok||Nopt3; Nb=N;
+      const tot=blur(N);
+      fu+=`<div class="result"><span class="lab">Diaframma (${depTxt})</span><div class="big">${fN(N)}</div><div class="sub">Sul barilotto ${fN(N)}: col soffietto lavora come ${fN(Math.round(N*(1+m)))}.${isFinite(mid)?` Porta il puntino su <b>${fmt(mid,2)}</b>, a metà fra le due letture.`:" Metti a fuoco a metà della profondità."}</div>
+        <dl><dt>Sfocato ai bordi</dt><dd>${fmt(D/(2*N*(1+m)),3)} mm</dd><dt>Diffrazione</dt><dd>${fmt(2.44*lam*N*(1+m),3)} mm</dd><dt>Nitidezza effettiva</dt><dd>${fmt(tot,3)} mm (criterio ${fmt(c,2)})</dd></dl></div>`;
+      if(Nok) fu+=`<div class="vd g"><div class="t">Tutto il soggetto nitido.</div><p>Non chiudere di più: la diffrazione peggiorerebbe.</p></div>`;
+      else{ const mMax=Math.sqrt(c*c/(2.44*lam)/(D/(m*m))); fu+=`<div class="vd ${tot<=c*1.5?"y":"o"}"><div class="t">${tot<=c*1.5?"Quasi tutto nitido.":"Non si può avere tutto nitido."}</div><p>${fN(N)} è il diaframma migliore. Per avere tutta la profondità nitida servirebbe un ingrandimento di al massimo ${fmt(mMax,2)} (${mMax>=1?fmt(mMax,1)+":1":"1:"+fmt(1/mMax,1)}): inquadra più largo e stringi in stampa, oppure scegli cosa tenere nitido e usa il tilt per mettere il piano di fuoco sul soggetto.</p></div>`; }
+      fu+=`<div class="card"><span class="lab">Sul banco, passo per passo</span><ol class="steps"><li>Banco basso e stabile, peso sotto il treppiede. Ripara il soggetto dal vento (un pannello, un ombrello).</li><li>Fissa l'ingrandimento col <b>soffietto</b>: allunga finché il soggetto ha la grandezza giusta sul vetro.</li><li>Metti a fuoco <b>spostando tutta la macchina</b> sul morsetto (o il soggetto), non col posteriore: col posteriore cambieresti di nuovo l'ingrandimento.</li><li>Se il soggetto è piatto e di sbieco (foglia, corteccia), usa il tilt o lo swing per posare il piano di fuoco sul soggetto.</li>${isFinite(mid)?`<li>Fuoco sul punto più vicino e sul più lontano, leggi la scala, puntino su <b>${fmt(mid,2)}</b>.</li>`:""}<li>Chiudi a <b>${fN(N)}</b> e controlla col lentino.</li><li>Un millimetro di movimento del soggetto sposta il fuoco di ${fmt(m*m,2)} mm in pellicola.</li></ol></div>`;
+    }
+  }
+  $("kFuoco").innerHTML=fu;
+  // blocco 3
+  const Nw=st.kNx||Nb||22;
+  chips($("knnChips"),NT.filter(x=>x>=8),Nw,v=>String(v).replace(".",","),v=>st.kNx=v);
+  const bf=m>0?s2(1+m):0;
+  const pT=x=>{x=String(x||"").trim().replace(",",".");if(!x)return NaN;if(x.includes("/")){const [a,b]=x.split("/").map(parseFloat);return a>0&&b>0?a/b:NaN;}const v=parseFloat(x);return v>0?v:NaN;};
+  const fT=t=>{if(t>=1)return fmt(t,t>=10?0:1)+" s";const dd=1/t,sd=[2,4,8,15,30,60,125,250,500];const n=sd.reduce((a,b)=>Math.abs(Math.log(b/dd))<Math.abs(Math.log(a/dd))?b:a);return "1/"+n;};
+  const pF=x=>{x=String(x||"").trim().replace(",",".");if(!x)return NaN;const q=x.split(/\s+/).map(parseFloat);if(!(q[0]>0))return NaN;return s2(q[0])+(q[1]>0?q[1]/10:0);};
+  const fF=v=>fN(NT.reduce((a,b)=>Math.abs(s2(b)-v)<Math.abs(s2(a)-v)?b:a));
+  let out=m>0?`<div class="result"><span class="lab">Sul Sekonic, prima di misurare</span><div class="big" style="font-size:30px">ISO 80, Filtro −${stp(bf)}</div><div class="sub">Fattore soffietto nella <b>compensazione filtro</b> (Tool Box, Set Filter Compensation): vale per incidente, spot, ambiente e flash. Col filtro il meno dà più luce. Il −2,0 dello spot resta com'è. ${st.ks===1?"Modalità ambiente, priorità diaframma, luce incidente vicino al soggetto.":"Modalità flash cordless, priorità diaframma."} Alla fine togli il filtro (No Filter).</div></div>`:"";
+  const target=s2(Nw);
+  if(st.ks===1){ const t=pT(st.kAmb), ts=pT(st.kAmbS);
+    if(t>0){ const tc=t>0.5?Math.pow(t,1.48):t;
+      out+=`<div class="result"><span class="lab">Tempo di posa a ${fN(Nw)}</span><div class="big">${fT(tc)}</div><div class="sub">${tc>t*1.05?`Letto ${fT(t)}, corretto per la reciprocità della FP4+.`:"Il tiraggio è già nella lettura."}</div></div>`;
+      if(tc>1/15) out+=`<div class="vd ${tc>0.5?"o":"y"}"><div class="t">${tc>0.5?"Col vento il soggetto si muove.":"Tempo lungo."}</div><p>Ripara dal vento e scatta nelle pause. Per insetti e piante mosse: flash vicino.</p></div>`;
+      if(ts>0){const r=Math.log2(ts/t); out+=`<div class="vd ${r>2.5?"o":"g"}"><div class="t">Contrasto: ${stp(r)} stop.</div><p>Luci in zona VI, ombre in zona ${zr(6-r)}.${r>2.5?" Schiarisci con un pannello bianco.":""}</p></div>`;}
+    } else if(m>0) out+=`<div class="vd"><p style="margin:0">Misura la luce vicino al soggetto e scrivi il tempo letto a ${fN(Nw)}.</p></div>`;
+  } else {
+    const r=pF(st.kLK);
+    out+=`<div class="result"><span class="lab">Obiettivo per il flash</span><div class="big" style="font-size:30px">Flash da solo: ${fN(Nw)}</div><div class="sub">Flash vicino al soggetto, con diffusore, di lato e un po' in alto. Tempo 1/60: l'ambiente resta molto sotto.${st.ks===3?` Pannello bianco dall'altra parte: lato in ombra circa ${fF(target-1.5)}.`:""}</div></div>`;
+    if(isFinite(r)){ const dd=r-target, a=Math.abs(dd);
+      out+=`<div class="vd ${a<=0.15?"g":"y"}"><p style="margin:0">${a<=0.15?"Flash giusto.":dd>0?`Troppa luce di ${stp(a)} stop: abbassa la potenza o allontana il flash (distanza × ${fmt(Math.pow(2,a/2),2)}).`:`Manca ${stp(a)} stop: alza la potenza o avvicina il flash (distanza × ${fmt(Math.pow(2,-a/2),2)}). Al massimo: ${Math.ceil(Math.pow(2,a)-1e-6)} lampi sommati, al buio e senza vento.`}</p></div>`;}
+    const rp=pF(st.kLP); if(st.ks===3&&isFinite(r)&&isFinite(rp)){const q=r-rp; out+=`<div class="vd g"><p style="margin:0">Pannello: lato in ombra ${stp(q)} stop sotto, zona ${zr(6-q)}.</p></div>`;}
+    out+=`<div class="note">Il lampo ferma il movimento: la sua durata si misura nella modalità "Flash Duration Analysis" del Sekonic. Col flash vicino, pochi centimetri cambiano molto: misura sempre nel punto del soggetto.</div>`;
+  }
+  $("kEsp").innerHTML=out;
+  // blocco 4
+  const zs=num(st.kZs), zh=num(st.kZh); let sv="";
+  if(isFinite(zs)&&isFinite(zh)&&zh>zs){ let add=0; const zS=5+zs; if(zS<2.85) add=3-zS; const zH=5+zh+add, dz=zH-8, Nd=Math.max(-2,Math.min(2,-Math.round(dz))); const nTxt=Nd===0?"N":Nd>0?"N+"+Nd:"N−"+(-Nd);
+    sv=`<div class="result"><span class="lab">Sviluppo</span><div class="big">${nTxt}${Math.abs(dz)>2.4?" non basta":""}</div><dl><dt>Contrasto</dt><dd>${fmt(zh-zs,1)} stop</dd><dt>Ombra con dettaglio</dt><dd>zona ${zr(zS+add)}</dd><dt>Alta luce</dt><dd>zona ${zr(zH)}</dd></dl></div>`+(add>0?`<div class="vd y"><p style="margin:0">Aggiungi ${stp(add)} stop di esposizione: l'ombra cadeva in zona ${zr(zS)}.</p></div>`:"");
+  } else sv=`<div class="vd"><p style="margin:0">Scrivi le due differenze lette col Sekonic.</p></div>`;
+  $("kSvil").innerHTML=sv;
+}
+for(const k of ["kL","kS","kOv","kOi","kE","kr1","kr2","kDep","kAmb","kAmbS","kLK","kLP","kZs","kZh"]) $(k).addEventListener("input",e=>{st[k]=e.target.value;save();render();});
+render();
+</script>
+</body>
+</html>
